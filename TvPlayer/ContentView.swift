@@ -59,10 +59,14 @@ struct PlayerContainerView : View {
     
     var body: some View {
         VStack {
-            Text("TV Player")
-                .bold()
+            HStack {
+                Image(systemName: "tv")
+                Text("TV Player")
+                    .bold()
+            }
+            
             PlayerView()
-                .frame(height: 211)
+                .aspectRatio(1.778, contentMode: .fit)
             
             List(stationLoader.stations) { station in
                 StationRow(station: station)
@@ -75,13 +79,13 @@ struct StationRow : View {
     var station: Station
 
     var body: some View {
-            Button(action: {
-                playStation(url: self.station.url)
-                }
-            ) {
-                Text(station.name)
-                    .multilineTextAlignment(.center)
-                    .padding(.leading, 20.0)
+        Button(action: {
+            playStation(url: self.station.url)
+            }
+        ) {
+            Text(station.name)
+                .multilineTextAlignment(.center)
+                .padding(.leading, 15.0)
         }
     }
 }

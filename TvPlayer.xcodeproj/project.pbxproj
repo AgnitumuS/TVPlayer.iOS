@@ -19,7 +19,7 @@
 
 /* Begin PBXFileReference section */
 		775DFB2623F64B7600464191 /* StationLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationLoader.swift; sourceTree = "<group>"; };
-		7798846423E9A4C9000209A5 /* TvPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TvPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7798846423E9A4C9000209A5 /* TV Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TV Player.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7798846723E9A4C9000209A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7798846923E9A4C9000209A5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7798846B23E9A4C9000209A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -65,7 +65,7 @@
 		7798846523E9A4C9000209A5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7798846423E9A4C9000209A5 /* TvPlayer.app */,
+				7798846423E9A4C9000209A5 /* TV Player.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,7 +121,7 @@
 			);
 			name = TvPlayer;
 			productName = TvPlayer;
-			productReference = 7798846423E9A4C9000209A5 /* TvPlayer.app */;
+			productReference = 7798846423E9A4C9000209A5 /* TV Player.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -367,7 +367,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = yucao.TvPlayer;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "TV Player";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -388,7 +388,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = yucao.TvPlayer;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "TV Player";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
