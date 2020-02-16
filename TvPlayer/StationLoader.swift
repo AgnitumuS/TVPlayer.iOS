@@ -26,12 +26,17 @@ class StationLoader: ObservableObject {
                 print(json)
                 let jsonObj = JSON.init(json)
                 for station in jsonObj["stations"].arrayValue {
+                    var urls: [String] = []
+                    for url in station["url"].arrayValue {
+                        urls.append(url.stringValue)
+                    }
                     tempStationList.append(
                         Station(
                             name: station["name"].stringValue,
-                            url: station["url"].stringValue
+                            urls: urls
                             )
                     );
+
                 }
                 self.stations = tempStationList
                 break
