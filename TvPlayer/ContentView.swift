@@ -110,12 +110,16 @@ struct PlayerContainerView : View {
                 Image(systemName: "tv")
                 Text(currentPlayingInfo.station.name)
                     .bold()
+                    .font(.system(size: 20))
                 Spacer()
                 Button (action: {
                     self.currentPlayingInfo.setCurrentSource(source: switchSource(station: self.currentPlayingInfo.station, source: self.currentPlayingInfo.source))
                 }) {
                     Text(self.currentPlayingInfo.sourceInfo)
+                        .bold()
+                        .font(.system(size: 20))
                         .padding(.trailing, 15.0)
+                        
                 }
             }
             
