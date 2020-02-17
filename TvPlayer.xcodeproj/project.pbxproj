@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2FDE34A10195AC8F573C4FA2 /* libPods-TvPlayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E424EB5A90C469E7E08765C8 /* libPods-TvPlayer.a */; };
 		775DFB2723F64B7600464191 /* StationLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775DFB2623F64B7600464191 /* StationLoader.swift */; };
 		7798846823E9A4C9000209A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798846723E9A4C9000209A5 /* AppDelegate.swift */; };
 		7798846A23E9A4C9000209A5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798846923E9A4C9000209A5 /* SceneDelegate.swift */; };
@@ -14,7 +15,6 @@
 		7798846E23E9A4CA000209A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7798846D23E9A4CA000209A5 /* Assets.xcassets */; };
 		7798847123E9A4CA000209A5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7798847023E9A4CA000209A5 /* Preview Assets.xcassets */; };
 		7798847423E9A4CA000209A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7798847223E9A4CA000209A5 /* LaunchScreen.storyboard */; };
-		B5B1CC697D9D0583EB79DE8B /* Pods_TvPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8CAFAC51B5474666483B6A2 /* Pods_TvPlayer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 		7798847523E9A4CA000209A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FE8678FF32B135FFCCD8D5F /* Pods-TvPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TvPlayer.debug.xcconfig"; path = "Target Support Files/Pods-TvPlayer/Pods-TvPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 		A2CC548ECBED839453BD64D8 /* Pods-TvPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TvPlayer.release.xcconfig"; path = "Target Support Files/Pods-TvPlayer/Pods-TvPlayer.release.xcconfig"; sourceTree = "<group>"; };
-		E8CAFAC51B5474666483B6A2 /* Pods_TvPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TvPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E424EB5A90C469E7E08765C8 /* libPods-TvPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TvPlayer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5B1CC697D9D0583EB79DE8B /* Pods_TvPlayer.framework in Frameworks */,
+				2FDE34A10195AC8F573C4FA2 /* libPods-TvPlayer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,7 +47,7 @@
 		496FDAF67B0882C9FEC7718C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E8CAFAC51B5474666483B6A2 /* Pods_TvPlayer.framework */,
+				E424EB5A90C469E7E08765C8 /* libPods-TvPlayer.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -113,7 +113,6 @@
 				7798846023E9A4C9000209A5 /* Sources */,
 				7798846123E9A4C9000209A5 /* Frameworks */,
 				7798846223E9A4C9000209A5 /* Resources */,
-				813116C822897A3FC816F934 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -191,23 +190,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		813116C822897A3FC816F934 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TvPlayer/Pods-TvPlayer-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TvPlayer/Pods-TvPlayer-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TvPlayer/Pods-TvPlayer-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

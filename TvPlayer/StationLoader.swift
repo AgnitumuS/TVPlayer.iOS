@@ -20,7 +20,7 @@ class StationLoader: ObservableObject {
         
         var tempStationList: [Station] = []
 
-        Alamofire.request(url).responseJSON { (response) in
+        AF.request(url).responseJSON { (response) in
             switch response.result {
             case .success(let json):
                 print(json)

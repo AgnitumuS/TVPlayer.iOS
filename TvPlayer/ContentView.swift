@@ -14,7 +14,7 @@ import SwiftyJSON
 
 var player: AVPlayer!
 let playerLayer = AVPlayerLayer()
-var stationListUrl: String = "http://13.78.120.63/tv/tv_station_list_ext.json"
+var stationListUrl: String = "http://52.155.97.142/tv/tv_station_list.json"
 
 class CurrentPlayingInfo: ObservableObject {
     @Published var station: Station
@@ -121,7 +121,7 @@ struct PlayerContainerView : View {
                         .padding(.trailing, 15.0)
                         
                 }
-            }
+            }.padding(.top, 5.0)
             
             PlayerView()
                 .aspectRatio(1.778, contentMode: .fit)
