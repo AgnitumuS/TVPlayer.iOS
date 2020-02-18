@@ -14,7 +14,8 @@ import SwiftyJSON
 
 var player: AVPlayer!
 let playerLayer = AVPlayerLayer()
-var stationListUrl: String = "http://52.155.97.142/tv/tv_station_list.json"
+//var stationListUrl: String = "http://52.155.97.142/tv/tv_station_list.json"
+var stationListUrl: String = "https://gitee.com/cy8018/Resources/raw/master/tv/tv_station_list.json"
 
 class CurrentPlayingInfo: ObservableObject {
     @Published var station: Station

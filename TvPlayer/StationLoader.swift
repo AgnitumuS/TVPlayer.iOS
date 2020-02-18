@@ -23,7 +23,7 @@ class StationLoader: ObservableObject {
         AF.request(url).responseJSON { (response) in
             switch response.result {
             case .success(let json):
-                print(json)
+                //print(json)
                 let jsonObj = JSON.init(json)
                 for station in jsonObj["stations"].arrayValue {
                     var urls: [String] = []
