@@ -9,10 +9,11 @@
 import UIKit
 import SwiftUI
 
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    var device = Device()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -21,14 +22,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the SwiftUI view that provides the window contents.
         let contentView = ContentView()
-
+            .environmentObject(device)
+        
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
+            window.rootViewController = PreferenceUIHostingController(wrappedView: contentView)
             self.window = window
             window.makeKeyAndVisible()
+            
+            let size = windowScene.screen.bounds.size
+            device.isLandscape = size.width > size.height
         }
+    }
+    
+    func windowScene(_ windowScene: UIWindowScene,
+        didUpdate previousCoordinateSpace: UICoordinateSpace,
+        interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
+        traitCollection previousTraitCollection: UITraitCollection) {
+
+        let size = windowScene.screen.bounds.size
+        device.isLandscape = size.width > size.height
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

@@ -14,7 +14,6 @@ import SwiftyJSON
 
 var player: AVPlayer!
 let playerLayer = AVPlayerLayer()
-//var stationListUrl: String = "http://52.155.97.142/tv/tv_station_list.json"
 var stationListUrl: String = "https://gitee.com/cy8018/Resources/raw/master/tv/tv_station_list.json"
 
 class CurrentPlayingInfo: ObservableObject {
@@ -70,7 +69,8 @@ func switchSource (station: Station, source: Int) -> Int {
 
 struct ContentView: View {
     var body: some View {
-          PlayerContainerView()
+        PlayerContainerView()
+        .prefersHomeIndicatorAutoHidden(true)
     }
 }
 
@@ -101,36 +101,46 @@ class PlayerUIView: UIView {
 }
 
 struct PlayerContainerView : View {
+    @EnvironmentObject var device : Device
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", urls: [""]), source: 0, sourceInfo: "")
     
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                Image(systemName: "tv")
-                Text(currentPlayingInfo.station.name)
-                    .bold()
-                    .font(.system(size: 20))
-                Spacer()
-                Button (action: {
-                    self.currentPlayingInfo.setCurrentSource(source: switchSource(station: self.currentPlayingInfo.station, source: self.currentPlayingInfo.source))
-                }) {
-                    Text(self.currentPlayingInfo.sourceInfo)
+            if self.device.isLandscape {
+                PlayerView()
+                    .aspectRatio(1.778, contentMode: .fit)
+            }
+            else {
+                HStack {
+                    Spacer()
+                    Image(systemName: "tv")
+                    Text(currentPlayingInfo.station.name)
                         .bold()
-                        .font(.system(size: 20))
-                        .padding(.trailing, 15.0)
-                        
+                        .font(.system(size: 30))
+                    Spacer()
+                    Button (action: {
+                        self.currentPlayingInfo.setCurrentSource(source: switchSource(station: self.currentPlayingInfo.station, source: self.currentPlayingInfo.source))
+                    })
+                    {
+                        Text(self.currentPlayingInfo.sourceInfo)
+                            .bold()
+                            .font(.system(size: 30))
+                            .padding(.trailing, 15.0)
+                            
+                    }
+                }.padding(.top, 5.0)
+                
+                PlayerView()
+                    .aspectRatio(1.778, contentMode: .fit)
+                
+                List(stationLoader.stations) { station in
+                    StationRow(station: station, currentPlayingInfo: self.currentPlayingInfo)
                 }
-            }.padding(.top, 5.0)
-            
-            PlayerView()
-                .aspectRatio(1.778, contentMode: .fit)
-            
-            List(stationLoader.stations) { station in
-                StationRow(station: station, currentPlayingInfo: self.currentPlayingInfo)
             }
         }
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
@@ -147,6 +157,7 @@ struct StationRow : View {
                 }
             ) {
                 Text(station.name)
+                .font(.system(size: 24))
                 .padding(.leading, 15.0)
             }
         }
