@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4877E76F3FBD0AF7AE18DA18 /* Pods_TvPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A8D472B6A89051BC6C3DC6 /* Pods_TvPlayer.framework */; };
 		775DFB2723F64B7600464191 /* StationLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775DFB2623F64B7600464191 /* StationLoader.swift */; };
 		7798846823E9A4C9000209A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798846723E9A4C9000209A5 /* AppDelegate.swift */; };
 		7798846A23E9A4C9000209A5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798846923E9A4C9000209A5 /* SceneDelegate.swift */; };
@@ -17,10 +16,10 @@
 		7798847423E9A4CA000209A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7798847223E9A4CA000209A5 /* LaunchScreen.storyboard */; };
 		77C4CF2623FEB2D900F4DF75 /* PreferenceUIHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C4CF2523FEB2D900F4DF75 /* PreferenceUIHostingController.swift */; };
 		84CC51A5240AAED900F0FC1F /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC51A4240AAED900F0FC1F /* Device.swift */; };
+		DAC7DB82A40B44F1797BDBDF /* libPods-TvPlayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC8012431050180DF2C8241 /* libPods-TvPlayer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		46A8D472B6A89051BC6C3DC6 /* Pods_TvPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TvPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		775DFB2623F64B7600464191 /* StationLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationLoader.swift; sourceTree = "<group>"; };
 		7798846423E9A4C9000209A5 /* TV Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TV Player.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7798846723E9A4C9000209A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -34,6 +33,7 @@
 		84CC51A4240AAED900F0FC1F /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		9FE8678FF32B135FFCCD8D5F /* Pods-TvPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TvPlayer.debug.xcconfig"; path = "Target Support Files/Pods-TvPlayer/Pods-TvPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 		A2CC548ECBED839453BD64D8 /* Pods-TvPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TvPlayer.release.xcconfig"; path = "Target Support Files/Pods-TvPlayer/Pods-TvPlayer.release.xcconfig"; sourceTree = "<group>"; };
+		DEC8012431050180DF2C8241 /* libPods-TvPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TvPlayer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4877E76F3FBD0AF7AE18DA18 /* Pods_TvPlayer.framework in Frameworks */,
+				DAC7DB82A40B44F1797BDBDF /* libPods-TvPlayer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,7 +51,7 @@
 		496FDAF67B0882C9FEC7718C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				46A8D472B6A89051BC6C3DC6 /* Pods_TvPlayer.framework */,
+				DEC8012431050180DF2C8241 /* libPods-TvPlayer.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -119,7 +119,6 @@
 				7798846023E9A4C9000209A5 /* Sources */,
 				7798846123E9A4C9000209A5 /* Frameworks */,
 				7798846223E9A4C9000209A5 /* Resources */,
-				7640B4672D33D019C6B7F6F8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -197,23 +196,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7640B4672D33D019C6B7F6F8 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TvPlayer/Pods-TvPlayer-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TvPlayer/Pods-TvPlayer-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TvPlayer/Pods-TvPlayer-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -365,17 +347,20 @@
 			baseConfigurationReference = 9FE8678FF32B135FFCCD8D5F /* Pods-TvPlayer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"TvPlayer/Preview Content\"";
 				DEVELOPMENT_TEAM = TKYBKD8332;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TvPlayer/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = yucao.TvPlayer;
 				PRODUCT_NAME = "TV Player";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -386,17 +371,20 @@
 			baseConfigurationReference = A2CC548ECBED839453BD64D8 /* Pods-TvPlayer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"TvPlayer/Preview Content\"";
 				DEVELOPMENT_TEAM = TKYBKD8332;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TvPlayer/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = yucao.TvPlayer;
 				PRODUCT_NAME = "TV Player";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
