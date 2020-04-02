@@ -113,20 +113,30 @@ struct PlayerContainerView : View {
             }
             else {
                 HStack {
+                    Image(systemName: "repeat")
+                        .opacity(0)
+                    Text(self.currentPlayingInfo.sourceInfo)
+                        .bold()
+                        .font(.system(size: 22))
+                        .opacity(0)
                     Spacer()
                     Image(systemName: "tv")
                     Text(currentPlayingInfo.station.name)
                         .bold()
-                        .font(.system(size: 30))
+                        .font(.system(size: 26))
                     Spacer()
                     Button (action: {
                         self.currentPlayingInfo.setCurrentSource(source: switchSource(station: self.currentPlayingInfo.station, source: self.currentPlayingInfo.source))
                     })
                     {
+                        Image(systemName: "repeat")
+                            .foregroundColor(Color.gray)
+                            .opacity(self.currentPlayingInfo.sourceInfo.count > 0 ? 1 : 0)
                         Text(self.currentPlayingInfo.sourceInfo)
                             .bold()
-                            .font(.system(size: 30))
-                            .padding(.trailing, 15.0)
+                            .font(.system(size: 22))
+                            .foregroundColor(Color.gray)
+                            .padding(.trailing, 14.0)
                             
                     }
                 }.padding(.top, 5.0)
