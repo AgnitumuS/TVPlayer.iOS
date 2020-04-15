@@ -11,10 +11,46 @@ import AVKit
 import AVFoundation
 import Alamofire
 import SwiftyJSON
+import os.log
+
+var isBuffering: Bool = false
+
+var downloadSpeed: String = ""
+
+var timer: DispatchSourceTimer?
+
+var upWWAN: UInt64 = 0
+var upWiFi: UInt64 = 0
+var downWWAN: UInt64 = 0
+var downWiFi: UInt64 = 0
+var upSpeed: Double = 0.0
+var downSpeed: Double = 0.0
+
+var lastTraficMonitorTime: TimeInterval = Date().timeIntervalSince1970
 
 var player: AVPlayer!
+var asset: AVAsset!
+var playerItem: AVPlayerItem!
 let playerLayer = AVPlayerLayer()
+let requiredAssetKeys = [
+    "playable",
+    "hasProtectedContent"
+]
+
 var stationListUrl: String = "https://gitee.com/cy8018/Resources/raw/master/tv/tv_station_list.json"
+
+class BufferInfo: ObservableObject {
+    @Published var downloadSpeed: String = ""
+    //@Published var percentage: String = ""
+    
+    init(downloadSpeed: String) {
+        self.downloadSpeed = downloadSpeed
+    }
+    
+    func setDownloadSpeed(downloadSpeed: String) {
+        self.downloadSpeed = downloadSpeed
+    }
+}
 
 class CurrentPlayingInfo: ObservableObject {
     @Published var station: Station
@@ -48,8 +84,21 @@ class CurrentPlayingInfo: ObservableObject {
 }
 
 func playStation(url: String) {
-    print("Playing: \(url)")
-    player = AVPlayer(url: URL(string: url)!)
+    
+    os_log("Playing: %@", log: OSLog.default, type: .debug, url)
+    
+    // Create the asset to play
+    asset = AVAsset(url: URL(string: url)!)
+    //player = AVPlayer(url: URL(string: url)!)
+    
+    // Create a new AVPlayerItem with the asset and an
+    // array of asset keys to be automatically loaded
+    playerItem = AVPlayerItem(asset: asset,
+                              automaticallyLoadedAssetKeys: requiredAssetKeys)
+    
+    // Associate the player item with the player
+    player = AVPlayer(playerItem: playerItem)
+    
     playerLayer.player = player
     player?.play()
 }
@@ -65,6 +114,50 @@ func switchSource (station: Station, source: Int) -> Int {
     }
     playStation(station: station, source: index)
     return index
+}
+
+func getNetSpeedText(speed: UInt64) -> String {
+    var text: String = ""
+    if (speed >= 0 && speed < 1024) {
+        text = String(speed) + " B/s"
+    } else if (speed >= 1024 && speed < (1024 * 1024)) {
+        text = String(speed / 1024) + " KB/s"
+    } else if (speed >= (1024 * 1024) && speed < (1024 * 1024 * 1024)) {
+        text = String(speed / (1024 * 1024)) + " MB/s"
+    }
+    return text
+}
+
+class ViewData: NSObject {
+    var playerItem: AVPlayerItem!
+    var player: AVPlayer!
+    var playerLayer: AVPlayerLayer!
+    
+    func setObserver() {
+        playerItem.addObserver(self, forKeyPath: "status", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
+    }
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+
+        if keyPath == "timeControlStatus", let change = change, let newValue = change[NSKeyValueChangeKey.newKey] as? Int, let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int {
+            let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
+            let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
+            if newStatus != oldStatus {
+                DispatchQueue.main.async {[weak self] in
+                    if newStatus == .playing {
+                        //self?.showPauseButton()
+                    }
+                    else if newStatus == .paused {
+                        //self?.showPlayButton()
+                    }
+                    else {
+                        //self?.showLoadingButton()
+                    }
+                }
+            }
+        }
+
+   }
 }
 
 struct ContentView: View {
@@ -105,6 +198,47 @@ struct PlayerContainerView : View {
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", urls: [""]), source: 0, sourceInfo: "")
     
+    @ObservedObject var bufferInfo = BufferInfo(downloadSpeed: downloadSpeed)
+    
+    init() {
+        startNetworkMonitor()
+    }
+    
+    func startNetworkMonitor() {
+
+        timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+        timer?.schedule(deadline: DispatchTime.now(), repeating: .milliseconds(1000))
+        
+        timer?.setEventHandler(
+            handler: {
+                DispatchQueue.main.sync {
+                    let timeNow: TimeInterval = Date().timeIntervalSince1970
+                    
+                    let dataUsage = DataUsage.getDataUsage()
+                    let downChanged = dataUsage.wirelessWanDataReceived + dataUsage.wifiReceived - downWWAN - downWiFi
+                    var timeChanged = timeNow * 1000 - lastTraficMonitorTime * 1000
+                    if timeChanged < 1 {
+                        timeChanged = 1
+                    }
+                    let downSpeedRaw = downChanged * 1000 / UInt64(timeChanged)
+                    
+                    downloadSpeed = getNetSpeedText(speed: downSpeedRaw)
+                    upWWAN = dataUsage.wirelessWanDataSent
+                    upWiFi = dataUsage.wifiSent
+                    downWWAN = dataUsage.wirelessWanDataReceived
+                    downWiFi = dataUsage.wifiReceived
+             
+                    lastTraficMonitorTime = timeNow
+                    
+                    self.bufferInfo.downloadSpeed = downloadSpeed
+                    
+                    os_log("Download Speed: %@", log: OSLog.default, type: .debug, downloadSpeed)
+                }
+            }
+        )
+        timer?.resume()
+    }
+    
     var body: some View {
         VStack {
             if self.device.isLandscape {
@@ -115,10 +249,12 @@ struct PlayerContainerView : View {
                 HStack {
                     Image(systemName: "repeat")
                         .opacity(0)
-                    Text(self.currentPlayingInfo.sourceInfo)
-                        .bold()
-                        .font(.system(size: 22))
-                        .opacity(0)
+//                    Text(self.currentPlayingInfo.sourceInfo)
+//                        .bold()
+//                        .font(.system(size: 22))
+//                        .opacity(0)
+                    Text(downloadSpeed)
+                        .font(.system(size: 20))
                     Spacer()
                     Image(systemName: "tv")
                     Text(currentPlayingInfo.station.name)
@@ -140,9 +276,12 @@ struct PlayerContainerView : View {
                             
                     }
                 }.padding(.top, 5.0)
-                
-                PlayerView()
-                    .aspectRatio(1.778, contentMode: .fit)
+                ZStack() {
+                    PlayerView()
+                        .aspectRatio(1.778, contentMode: .fit)
+                    //Text(downloadSpeed)
+                        //.font(.system(size: 24))
+                }
                 
                 List(stationLoader.stations) { station in
                     StationRow(station: station, currentPlayingInfo: self.currentPlayingInfo)
