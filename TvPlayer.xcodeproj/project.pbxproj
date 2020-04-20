@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,7 @@
 		7798847423E9A4CA000209A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7798847223E9A4CA000209A5 /* LaunchScreen.storyboard */; };
 		77C4CF2623FEB2D900F4DF75 /* PreferenceUIHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C4CF2523FEB2D900F4DF75 /* PreferenceUIHostingController.swift */; };
 		8435646C244335BF00D5E6E4 /* DataUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8435646B244335BF00D5E6E4 /* DataUsage.swift */; };
+		8448168F2448954D001E42A4 /* RemoteImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8448168E2448954D001E42A4 /* RemoteImage */; };
 		84CC51A5240AAED900F0FC1F /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC51A4240AAED900F0FC1F /* Device.swift */; };
 		DAC7DB82A40B44F1797BDBDF /* libPods-TvPlayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC8012431050180DF2C8241 /* libPods-TvPlayer.a */; };
 /* End PBXBuildFile section */
@@ -25,7 +26,7 @@
 		7798846423E9A4C9000209A5 /* TV Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TV Player.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7798846723E9A4C9000209A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7798846923E9A4C9000209A5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		7798846B23E9A4C9000209A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7798846B23E9A4C9000209A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ContentView.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		7798846D23E9A4CA000209A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7798847023E9A4CA000209A5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7798847323E9A4CA000209A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -44,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8448168F2448954D001E42A4 /* RemoteImage in Frameworks */,
 				DAC7DB82A40B44F1797BDBDF /* libPods-TvPlayer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,6 +132,9 @@
 			dependencies = (
 			);
 			name = TvPlayer;
+			packageProductDependencies = (
+				8448168E2448954D001E42A4 /* RemoteImage */,
+			);
 			productName = TvPlayer;
 			productReference = 7798846423E9A4C9000209A5 /* TV Player.app */;
 			productType = "com.apple.product-type.application";
@@ -159,6 +164,9 @@
 				Base,
 			);
 			mainGroup = 7798845B23E9A4C9000209A5;
+			packageReferences = (
+				8448168D2448954D001E42A4 /* XCRemoteSwiftPackageReference "RemoteImage" */,
+			);
 			productRefGroup = 7798846523E9A4C9000209A5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -430,6 +438,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8448168D2448954D001E42A4 /* XCRemoteSwiftPackageReference "RemoteImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/crelies/RemoteImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8448168E2448954D001E42A4 /* RemoteImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8448168D2448954D001E42A4 /* XCRemoteSwiftPackageReference "RemoteImage" */;
+			productName = RemoteImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7798845C23E9A4C9000209A5 /* Project object */;
 }

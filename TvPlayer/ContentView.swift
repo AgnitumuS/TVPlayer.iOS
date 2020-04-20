@@ -12,6 +12,7 @@ import AVFoundation
 import Alamofire
 import SwiftyJSON
 import os.log
+import RemoteImage
 
 var isBuffering: Bool = false
 
@@ -37,7 +38,8 @@ let requiredAssetKeys = [
     "hasProtectedContent"
 ]
 
-var stationListUrl: String = "https://gitee.com/cy8018/Resources/raw/master/tv/tv_station_list.json"
+var stationListUrl: String = "https://gitee.com/cy8018/Resources/raw/master/tv/tv_station_list_ext.json"
+var severPrefix: String = "https://gitee.com/cy8018/Resources/raw/master/tv/"
 
 class BufferInfo: ObservableObject {
     @Published var downloadSpeed: String = ""
@@ -129,9 +131,6 @@ func getNetSpeedText(speed: UInt64) -> String {
 }
 
 class ViewData: NSObject {
-    var playerItem: AVPlayerItem!
-    var player: AVPlayer!
-    var playerLayer: AVPlayerLayer!
     
     func setObserver() {
         playerItem.addObserver(self, forKeyPath: "status", options: [], context: nil)
@@ -160,12 +159,7 @@ class ViewData: NSObject {
    }
 }
 
-struct ContentView: View {
-    var body: some View {
-        PlayerContainerView()
-        .prefersHomeIndicatorAutoHidden(true)
-    }
-}
+
 
 struct PlayerView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
@@ -193,10 +187,19 @@ class PlayerUIView: UIView {
     }
 }
 
+class ContentData: ObservableObject {
+    //@Published var playing: Bool = false
+    @Published var isBuffering: Bool = false
+}
+
 struct PlayerContainerView : View {
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    @ObservedObject var contentData = ContentData()
     @EnvironmentObject var device : Device
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
-    @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", urls: [""]), source: 0, sourceInfo: "")
+    @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", logo: "", urls: [""]), source: 0, sourceInfo: "")
     
     @ObservedObject var bufferInfo = BufferInfo(downloadSpeed: downloadSpeed)
     
@@ -247,19 +250,24 @@ struct PlayerContainerView : View {
             }
             else {
                 HStack {
-                    Image(systemName: "repeat")
-                        .opacity(0)
+//                    Image(systemName: "repeat")
+//                        .opacity(0)
 //                    Text(self.currentPlayingInfo.sourceInfo)
 //                        .bold()
 //                        .font(.system(size: 22))
 //                        .opacity(0)
                     Text(downloadSpeed)
-                        .font(.system(size: 20))
+                        .font(.system(size: 16))
+                        .padding(.leading, 10.0)
+                        .frame(width: 80)
+                        .foregroundColor(Color.gray)
+                        .lineLimit(1)
                     Spacer()
                     Image(systemName: "tv")
                     Text(currentPlayingInfo.station.name)
                         .bold()
-                        .font(.system(size: 26))
+                        .font(.system(size: 24))
+                        .lineLimit(1)
                     Spacer()
                     Button (action: {
                         self.currentPlayingInfo.setCurrentSource(source: switchSource(station: self.currentPlayingInfo.station, source: self.currentPlayingInfo.source))
@@ -269,11 +277,12 @@ struct PlayerContainerView : View {
                             .foregroundColor(Color.gray)
                             .opacity(self.currentPlayingInfo.sourceInfo.count > 0 ? 1 : 0)
                         Text(self.currentPlayingInfo.sourceInfo)
-                            .bold()
-                            .font(.system(size: 22))
+                            //.bold()
+                            .font(.system(size: 20))
                             .foregroundColor(Color.gray)
-                            .padding(.trailing, 14.0)
-                            
+                            .padding(.trailing, 10.0)
+                            .frame(width: 65)
+                            .lineLimit(1)
                     }
                 }.padding(.top, 5.0)
                 ZStack() {
@@ -296,10 +305,26 @@ struct PlayerContainerView : View {
 struct StationRow : View {
     var station: Station
 
-    @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", urls: [""]), source: 0, sourceInfo: "")
+    @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", logo: "", urls: [""]), source: 0, sourceInfo: "")
+    
+    @State private var logoPic: UIImage?
+    
+
     
     var body: some View {
         HStack {
+            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                Text(error.localizedDescription)
+            }, imageView: { image in
+                image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            }, loadingView: {
+                Text("")
+            })
+            .frame(width: 80, height: 36)
+            .padding(8)
+            
             Button(action: {
                 self.currentPlayingInfo.setCurrentStation(station: self.station, source: 0)
                 playStation(url: self.station.urls[0])
@@ -315,8 +340,18 @@ struct StationRow : View {
 
 struct Station: Decodable, Identifiable {
     var id = UUID()
-    var name : String
+    var name: String
+    var logo: String
     var urls: [String]
+}
+
+struct ContentView: View {
+    
+    
+    var body: some View {
+        PlayerContainerView()
+        .prefersHomeIndicatorAutoHidden(true)
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {

@@ -33,6 +33,7 @@ class StationLoader: ObservableObject {
                     tempStationList.append(
                         Station(
                             name: station["name"].stringValue,
+                            logo: station["logo"].stringValue,
                             urls: urls
                             )
                     );
