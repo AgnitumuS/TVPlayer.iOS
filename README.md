@@ -8,4 +8,5 @@
 <a href="https://github.com/cy8018/TVPlayer.iOS/blob/master/LICENSE"><img src="http://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat"></a>
 </p>
 <br/>
+
 ![avatar](https://raw.githubusercontent.com/cy8018/Resources/master/tv/snapshot/snapshot_ios_tv_1.png)
