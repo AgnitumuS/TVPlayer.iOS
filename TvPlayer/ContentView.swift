@@ -130,36 +130,6 @@ func getNetSpeedText(speed: UInt64) -> String {
     return text
 }
 
-class ViewData: NSObject {
-    
-    func setObserver() {
-        playerItem.addObserver(self, forKeyPath: "status", options: [], context: nil)
-        playerItem.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
-    }
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-
-        if keyPath == "timeControlStatus", let change = change, let newValue = change[NSKeyValueChangeKey.newKey] as? Int, let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int {
-            let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
-            let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
-            if newStatus != oldStatus {
-                DispatchQueue.main.async {[weak self] in
-                    if newStatus == .playing {
-                        //self?.showPauseButton()
-                    }
-                    else if newStatus == .paused {
-                        //self?.showPlayButton()
-                    }
-                    else {
-                        //self?.showLoadingButton()
-                    }
-                }
-            }
-        }
-
-   }
-}
-
-
 
 struct PlayerView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
@@ -187,16 +157,10 @@ class PlayerUIView: UIView {
     }
 }
 
-class ContentData: ObservableObject {
-    //@Published var playing: Bool = false
-    @Published var isBuffering: Bool = false
-}
-
 struct PlayerContainerView : View {
     
     @Environment(\.colorScheme) var colorScheme
     
-    @ObservedObject var contentData = ContentData()
     @EnvironmentObject var device : Device
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", logo: "", urls: [""]), source: 0, sourceInfo: "")
@@ -244,18 +208,8 @@ struct PlayerContainerView : View {
     
     var body: some View {
         VStack {
-            if self.device.isLandscape {
-                PlayerView()
-                    .aspectRatio(1.778, contentMode: .fit)
-            }
-            else {
+            if !self.device.isLandscape {
                 HStack {
-//                    Image(systemName: "repeat")
-//                        .opacity(0)
-//                    Text(self.currentPlayingInfo.sourceInfo)
-//                        .bold()
-//                        .font(.system(size: 22))
-//                        .opacity(0)
                     Text(downloadSpeed)
                         .font(.system(size: 16))
                         .padding(.leading, 10.0)
@@ -285,15 +239,19 @@ struct PlayerContainerView : View {
                             .lineLimit(1)
                     }
                 }.padding(.top, 5.0)
-                ZStack() {
-                    PlayerView()
-                        .aspectRatio(1.778, contentMode: .fit)
-                    //Text(downloadSpeed)
-                        //.font(.system(size: 24))
-                }
-                
-                List(stationLoader.stations) { station in
-                    StationRow(station: station, currentPlayingInfo: self.currentPlayingInfo)
+            }
+
+            PlayerView()
+                .aspectRatio(1.778, contentMode: .fit)
+
+            if !self.device.isLandscape {
+                NavigationView {
+                    List(stationLoader.stations) { station in
+                        StationRow(station: station, currentPlayingInfo: self.currentPlayingInfo)
+                    }
+                    .navigationBarHidden(true)
+                    .navigationBarTitle(Text("Stations"))
+                    .edgesIgnoringSafeArea([.top, .bottom])
                 }
             }
         }
@@ -308,8 +266,6 @@ struct StationRow : View {
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(name: "TV Player", logo: "", urls: [""]), source: 0, sourceInfo: "")
     
     @State private var logoPic: UIImage?
-    
-
     
     var body: some View {
         HStack {
