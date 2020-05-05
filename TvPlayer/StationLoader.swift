@@ -20,7 +20,8 @@ class StationLoader: ObservableObject {
         guard let url = URL(string: urlString) else { return }
         
         var tempStationList: [Station] = []
-
+        var tmpIndex: Int = 0
+        
         AF.request(url).responseJSON { (response) in
             switch response.result {
             case .success(let json):
@@ -33,11 +34,13 @@ class StationLoader: ObservableObject {
                     }
                     tempStationList.append(
                         Station(
+                            index: tmpIndex,
                             name: station["name"].stringValue,
                             logo: station["logo"].stringValue,
                             urls: urls
                             )
                     )
+                    tmpIndex = tmpIndex + 1
                 }
                 self.stations = tempStationList
                 break
