@@ -12,6 +12,7 @@ import Combine
 import Alamofire
 import SwiftyJSON
 
+
 class StationLoader: ObservableObject {
     @Published var stations = [Station]()
     
@@ -36,8 +37,7 @@ class StationLoader: ObservableObject {
                             logo: station["logo"].stringValue,
                             urls: urls
                             )
-                    );
-
+                    )
                 }
                 self.stations = tempStationList
                 break
