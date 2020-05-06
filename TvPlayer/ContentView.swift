@@ -32,7 +32,6 @@ var downWiFi: UInt64 = 0
 var upSpeed: Double = 0.0
 var downSpeed: Double = 0.0
 var lastTraficMonitorTime: TimeInterval = Date().timeIntervalSince1970
-var lastShowControlPanelTime: TimeInterval = Date().timeIntervalSince1970
 var downloadSpeed: String = ""
 
 var showLogo: Bool = true
@@ -106,7 +105,6 @@ func switchStation (playerData: PlayerData, station: Station, stationList: [Stat
 struct ContentView: View {
     
     @State var playerData = PlayerData()
-    @State var showcontrols = false
     @State var value : Float = 0
     @State var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
 
@@ -114,6 +112,8 @@ struct ContentView: View {
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
     @EnvironmentObject var device : Device
+    
+    @ObservedObject var controlInfo = ControlInfo(lastControlActiveTime: Date().timeIntervalSince1970, showControls: false)
     
     init() {
         startNetworkMonitor()
@@ -140,12 +140,11 @@ struct ContentView: View {
             DispatchQueue.main.sync {
                 
                 let timeNow: TimeInterval = Date().timeIntervalSince1970
-
-                
-                if timeNow - lastShowControlPanelTime > 5 {
-                    self.showcontrols = false
+                if timeNow - self.controlInfo.lastControlActiveTime > 5 {
+                    if self.controlInfo.showControls {
+                        self.controlInfo.setShowControls(showControls: false)
+                    }
                 }
-                
                 
                 let dataUsage = DataUsage.getDataUsage()
                 let downChanged = dataUsage.wirelessWanDataReceived + dataUsage.wifiReceived - downWWAN - downWiFi
@@ -177,23 +176,44 @@ struct ContentView: View {
         @Binding var playerData : PlayerData
         @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
         @State private var logoPic: UIImage?
+        @Environment(\.colorScheme) var colorScheme
+        
         var station: Station
         
         var body: some View {
             HStack {
                 if self.station.name != ""
                 {
-                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                        Text(error.localizedDescription)
-                    }, imageView: { image in
-                        image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    }, loadingView: {
-                        Text("")
-                    })
-                    .frame(width: 80, height: 36)
-                    .padding(8)
+                    if self.colorScheme == .dark && self.station.name.contains("CCTV") {
+                        ZStack {
+                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                                Text(error.localizedDescription)
+                            }, imageView: { image in
+                                image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            }, loadingView: {
+                                Text("")
+                            })
+                            .background(Color.gray)
+                            .cornerRadius(10)
+                            .frame(width: 80, height: 36)
+                            .padding(8)
+                        }
+                        
+                    } else {
+                        RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                            Text(error.localizedDescription)
+                        }, imageView: { image in
+                            image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        }, loadingView: {
+                            Text("")
+                        })
+                        .frame(width: 80, height: 36)
+                        .padding(8)
+                    }
                     
                     Button(action: {
                         self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
@@ -275,24 +295,24 @@ struct ContentView: View {
                     else if self.playerData.playbackStatus == PlaybackStatus.error {
                         ErrorView()
                     }
-                    if self.showcontrols{
+                    if self.controlInfo.showControls{
                         Controls(
                             playerData: self.$playerData,
                             currentPlayingInfo: self.currentPlayingInfo,
                             bufferInfo: self.bufferInfo,
-                            pannel: self.$showcontrols,
+                            controlInfo: self.controlInfo,
                             value: self.$value,
                             stationList: self.$stationLoader.stations
                         )
                     }
                 }
                 .onTapGesture {
-                    self.showcontrols = true
-                    lastShowControlPanelTime = Date().timeIntervalSince1970
+                    self.controlInfo.setShowControls(showControls: true)
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }
             } else {
                 
-                ZStack{
+                ZStack {
                     VideoPlayer(playerData: $playerData)
                         .aspectRatio(1.778, contentMode: .fit)
                     
@@ -309,12 +329,12 @@ struct ContentView: View {
                     else if self.playerData.playbackStatus == PlaybackStatus.error {
                         ErrorView()
                     }
-                    if self.showcontrols {
+                    if self.controlInfo.showControls {
                         Controls(
                             playerData: self.$playerData,
                             currentPlayingInfo: self.currentPlayingInfo,
                             bufferInfo: self.bufferInfo,
-                            pannel: self.$showcontrols,
+                            controlInfo: self.controlInfo,
                             value: self.$value,
                             stationList: self.$stationLoader.stations
                         )
@@ -322,11 +342,12 @@ struct ContentView: View {
                 }
                 .frame(height: UIScreen.main.bounds.width / 1.778)
                 .onTapGesture {
-                    self.showcontrols = true
+                    self.controlInfo.setShowControls(showControls: true)
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }
                 
                 GeometryReader{_ in
-                    NavigationView{
+                    NavigationView {
                         List(self.stationLoader.stations) { station in
                             StationRow(
                                 playerData: self.$playerData,
@@ -408,7 +429,7 @@ struct Controls : View {
     @Binding var playerData : PlayerData
     @ObservedObject var currentPlayingInfo: CurrentPlayingInfo
     @ObservedObject var bufferInfo: BufferInfo
-    @Binding var pannel : Bool
+    @ObservedObject var controlInfo: ControlInfo
     @Binding var value : Float
     @Binding var stationList: [Station]
     
@@ -431,7 +452,7 @@ struct Controls : View {
                 Button(action: {
                     self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .backward)
                     self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
-                    lastShowControlPanelTime = Date().timeIntervalSince1970
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }) {
                     
                     Image(systemName: "backward.fill")
@@ -448,7 +469,7 @@ struct Controls : View {
                         
                         self.playerData.player.play()
                     }
-                    lastShowControlPanelTime = Date().timeIntervalSince1970
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }) {
                     Image(systemName: self.playerData.playbackStatus == PlaybackStatus.playing ? "pause.fill" : "play.fill")
                         .font(.system(size: 25))
@@ -460,7 +481,7 @@ struct Controls : View {
                 Button(action: {
                     self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .forward)
                     self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
-                    lastShowControlPanelTime = Date().timeIntervalSince1970
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }) {
                     Image(systemName: "forward.fill")
                         .font(.system(size: 25))
@@ -472,7 +493,7 @@ struct Controls : View {
                 Button(action: {
                     let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .backward)
                     self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
-                    lastShowControlPanelTime = Date().timeIntervalSince1970
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }) {
                     Image(systemName: "arrow.left.square.fill")
                         .font(.system(size: 25))
@@ -484,7 +505,7 @@ struct Controls : View {
                 Button(action: {
                     let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .forward)
                     self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
-                    lastShowControlPanelTime = Date().timeIntervalSince1970
+                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                 }) {
                     Image(systemName: "arrow.right.square.fill")
                         .font(.system(size: 25))
@@ -503,7 +524,7 @@ struct Controls : View {
         .padding(.bottom, 20.0)
         .background(Color.black.opacity(0.0000001))
         .onTapGesture {
-            self.pannel = false
+            self.controlInfo.setShowControls(showControls: false)
         }
     }
     
@@ -597,6 +618,24 @@ struct Station: Decodable, Identifiable {
     var name: String
     var logo: String
     var urls: [String]
+}
+
+class ControlInfo: ObservableObject {
+    @Published var lastControlActiveTime: TimeInterval = Date().timeIntervalSince1970
+    @Published var showControls: Bool
+    
+    init(lastControlActiveTime: TimeInterval, showControls: Bool) {
+        self.lastControlActiveTime = lastControlActiveTime
+        self.showControls = showControls
+    }
+    
+    func setShowControls(showControls: Bool) {
+        self.showControls = showControls
+    }
+    
+    func setLastControlActiveTime(lastControlActiveTime: TimeInterval) {
+        self.lastControlActiveTime = lastControlActiveTime
+    }
 }
 
 class BufferInfo: ObservableObject {
