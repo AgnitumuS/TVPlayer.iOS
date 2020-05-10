@@ -107,11 +107,13 @@ struct ContentView: View {
     @State var playerData = PlayerData()
     @State var value : Float = 0
     @State var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-
+    @State var selectedStationIndex: Int = -1
+    
     @ObservedObject var bufferInfo = BufferInfo(downloadSpeed: "", percentage: "")
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
     @EnvironmentObject var device : Device
+    @Environment(\.colorScheme) var colorScheme
     
     @ObservedObject var controlInfo = ControlInfo(lastControlActiveTime: Date().timeIntervalSince1970, showControls: false)
     
@@ -119,6 +121,8 @@ struct ContentView: View {
         startNetworkMonitor()
         playerData.player = AVPlayer()
         playerData.setObserver()
+        
+        //UITableView.appearance().separatorStyle = .none
     }
     
     func getNetSpeedText(speed: UInt64) -> String {
@@ -172,59 +176,58 @@ struct ContentView: View {
     }
     
     struct StationRow : View {
-        
+                
         @Binding var playerData : PlayerData
         @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
         @State private var logoPic: UIImage?
         @Environment(\.colorScheme) var colorScheme
+        @Binding var selectedStationIndex: Int
         
         var station: Station
         
         var body: some View {
+
             HStack {
-                if self.station.name != ""
-                {
-                    if self.colorScheme == .dark && self.station.name.contains("CCTV") {
-                        ZStack {
-                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                                Text(error.localizedDescription)
-                            }, imageView: { image in
-                                image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                            }, loadingView: {
-                                Text("")
-                            })
-                            .background(Color.gray)
-                            .cornerRadius(10)
-                            .frame(width: 80, height: 36)
-                            .padding(8)
-                        }
-                        
-                    } else {
-                        RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                            Text(error.localizedDescription)
-                        }, imageView: { image in
-                            image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                        }, loadingView: {
-                            Text("")
-                        })
-                        .frame(width: 80, height: 36)
-                        .padding(8)
-                    }
-                    
-                    Button(action: {
-                        self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
-                        playStation(playerData: self.playerData, station: self.station, sourceIndex: 0)
-                        }
-                    ) {
-                        Text(station.name)
-                        .font(.system(size: 24))
-                        .padding(.leading, 15.0)
-                    }
+                if self.colorScheme == .dark && self.station.name.contains("CCTV") {
+                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                        Text(error.localizedDescription)
+                    }, imageView: { image in
+                        image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    }, loadingView: {
+                        Text("")
+                    })
+                    .background(Color(red: 0.35, green: 0.35, blue: 0.35))
+                    .cornerRadius(10)
+                    .frame(width: 80, height: 36)
+                    .padding(8)
+                } else {
+                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                        Text(error.localizedDescription)
+                    }, imageView: { image in
+                        image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    }, loadingView: {
+                        Text("")
+                    })
+                    .frame(width: 80, height: 36)
+                    .padding(8)
                 }
+                
+                Text(station.name)
+                .font(.system(size: 24))
+                .padding(.leading, 15.0)
+                
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            //.frame(width: UIScreen.main.bounds.width)
+            .onTapGesture {
+                self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
+                playStation(playerData: self.playerData, station: self.station, sourceIndex: 0)
+                self.selectedStationIndex = self.station.index
             }
         }
     }
@@ -234,11 +237,44 @@ struct ContentView: View {
         VStack{
             if !self.device.isLandscape {
                 HStack {
-                    Image("tv_icon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 36)
-                        .offset(y: -4)
+                    if currentPlayingInfo.station.urls[0].count > 0 {
+                        if self.colorScheme == .dark && currentPlayingInfo.station.name.contains("CCTV") {
+                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+                                Text(error.localizedDescription)
+                            }, imageView: { image in
+                                image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            }, loadingView: {
+                                Text("")
+                            })
+                            .frame(width: 40, height: 18)
+                            .padding(1)
+                            .background(Color(red: 0.35, green: 0.35, blue: 0.35))
+                            .cornerRadius(6)
+                            //.border(Color.red, width: 1)
+                        }
+                        else {
+                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+                                Text(error.localizedDescription)
+                            }, imageView: { image in
+                                image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            }, loadingView: {
+                                Text("")
+                            })
+                            .frame(width: 40, height: 30)
+                            .padding(1)
+                            //.border(Color.red, width: 1)
+                        }
+                    }
+                    else {
+                        Text("  ")
+                        .bold()
+                        .font(.system(size: 26))
+                    }
+                    
                     Text(currentPlayingInfo.station.name)
                         .bold()
                         .font(.system(size: 26))
@@ -314,17 +350,23 @@ struct ContentView: View {
                 
                 ZStack {
                     VideoPlayer(playerData: $playerData)
-                        .aspectRatio(1.778, contentMode: .fit)
+                    .aspectRatio(1.778, contentMode: .fit)
                     
                     if showLogo {
                         Image("tv_icon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 150, height: 100)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 150, height: 100)
                     }
                     
                     if self.playerData.playbackStatus == PlaybackStatus.loading {
-                        LoadingView(speedString: self.$bufferInfo.downloadSpeed)
+                        if self.device.isLandscape {
+                            LoadingView(speedString: self.$bufferInfo.downloadSpeed)
+                        }
+                        else {
+                            LoadingView(speedString: self.$bufferInfo.downloadSpeed)
+                            .offset(y: -15)
+                        }
                     }
                     else if self.playerData.playbackStatus == PlaybackStatus.error {
                         ErrorView()
@@ -348,16 +390,42 @@ struct ContentView: View {
                 
                 GeometryReader{_ in
                     NavigationView {
-                        List(self.stationLoader.stations) { station in
-                            StationRow(
-                                playerData: self.$playerData,
-                                currentPlayingInfo:
-                                self.currentPlayingInfo,
-                                station: station
-                            )
+                        
+                        if self.colorScheme == .dark {
+                            List {
+                                ForEach(self.stationLoader.stations) { station in
+
+                                    StationRow(
+                                        playerData: self.$playerData,
+                                        currentPlayingInfo:
+                                        self.currentPlayingInfo,
+                                        selectedStationIndex: self.$selectedStationIndex,
+                                        station: station
+                                    )
+                                    .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
+                                }
+                            }
+                            .navigationBarTitle("")
+                            .navigationBarHidden(true)
                         }
-                        .navigationBarTitle("")
-                        .navigationBarHidden(true)
+                        
+                        else {
+                            List {
+                                ForEach(self.stationLoader.stations) { station in
+
+                                    StationRow(
+                                        playerData: self.$playerData,
+                                        currentPlayingInfo:
+                                        self.currentPlayingInfo,
+                                        selectedStationIndex: self.$selectedStationIndex,
+                                        station: station
+                                    )
+                                        .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.85, green: 0.85, blue: 0.85) : Color.clear)
+                                }
+                            }
+                            .navigationBarTitle("")
+                            .navigationBarHidden(true)
+                        }
                     }
                 }
             }
@@ -382,7 +450,8 @@ struct LoadingView : View {
     var body : some View{
         
         VStack {
-            Text(" Loading...")
+            
+            Text(" Loading ...")
                 .font(.system(size: 18))
                 .padding(.leading, 20.0)
                 .padding(.trailing, 22.0)
@@ -390,6 +459,7 @@ struct LoadingView : View {
                 .padding(.bottom, 6.0)
                 .foregroundColor(Color.white)
                 .lineLimit(1)
+            
             Text(speedString)
                 .font(.system(size: 18))
                 .padding(.leading, 20.0)
@@ -426,6 +496,7 @@ struct ErrorView : View {
 
 struct Controls : View {
     
+    @EnvironmentObject var device : Device
     @Binding var playerData : PlayerData
     @ObservedObject var currentPlayingInfo: CurrentPlayingInfo
     @ObservedObject var bufferInfo: BufferInfo
@@ -433,98 +504,268 @@ struct Controls : View {
     @Binding var value : Float
     @Binding var stationList: [Station]
     
+    //@Environment(\.colorScheme) var colorScheme
+    
     var body : some View {
         VStack {
-            HStack {
-                Text(currentPlayingInfo.station.name)
-                    .foregroundColor(.white)
-                    .font(.system(size: 25))
-                    .padding(.top, 5.0)
-                    .padding(.bottom, 5.0)
-                    .padding(.leading, 15.0)
-                    .padding(.trailing, 15.0)
-            }
-            .background(Color.black.opacity(0.4))
-            .cornerRadius(12)
-            .padding(.all, 16.0)
-            Spacer()
-            HStack{
-                Button(action: {
-                    self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .backward)
-                    self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
-                }) {
+            if self.device.isLandscape {
+                VStack {
+                    HStack {
+//                        if self.colorScheme == .dark && currentPlayingInfo.station.name.contains("CCTV") {
+//                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+//                                Text(error.localizedDescription)
+//                            }, imageView: { image in
+//                                image
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                            }, loadingView: {
+//                                Text("")
+//                            })
+//                            .background(Color(red: 0.35, green: 0.35, blue: 0.35))
+//                            .cornerRadius(10)
+//                            .frame(width: 80, height: 36)
+//                            .padding(.top, 2.0)
+//                            .padding(.bottom, 2.0)
+//                            .padding(.leading, 8.0)
+//                            .padding(.trailing, 1.0)
+//                        } else {
+//                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+//                                Text(error.localizedDescription)
+//                            }, imageView: { image in
+//                                image
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                            }, loadingView: {
+//                                Text("")
+//                            })
+//                            .frame(width: 80, height: 36)
+//                            .padding(.top, 2.0)
+//                            .padding(.bottom, 2.0)
+//                            .padding(.leading, 8.0)
+//                            .padding(.trailing, 1.0)
+//                        }
+                        RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+                            Text(error.localizedDescription)
+                        }, imageView: { image in
+                            image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        }, loadingView: {
+                            Text("")
+                        })
+                        .frame(width: 80, height: 36)
+                        .padding(.top, 2.0)
+                        .padding(.bottom, 2.0)
+                        .padding(.leading, 8.0)
+                        .padding(.trailing, 1.0)
+                        Text(currentPlayingInfo.station.name)
+                            .foregroundColor(.white)
+                            .font(.system(size: 30))
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                            .padding(.leading, 1.0)
+                            .padding(.trailing, 15.0)
+                    }
+                    .background(Color.black.opacity(0.4))
+                    .cornerRadius(12)
+                    .padding(.all, 16.0)
                     
-                    Image(systemName: "backward.fill")
-                        .font(.title)
-                        .foregroundColor(.white)
-                }
-                .padding(.trailing, 10.0)
-                Button(action: {
-                    if self.playerData.playbackStatus == PlaybackStatus.playing {
-                        
-                        self.playerData.player.pause()
+                    Spacer()
+                    
+                    HStack {
+                        HStack {
+                            Button(action: {
+                                self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .backward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                
+                                Image(systemName: "backward.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.trailing, 10.0)
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                            Button(action: {
+                                if self.playerData.playbackStatus == PlaybackStatus.playing {
+                                    
+                                    self.playerData.player.pause()
+                                }
+                                else{
+                                    
+                                    self.playerData.player.play()
+                                }
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: self.playerData.playbackStatus == PlaybackStatus.playing ? "pause.fill" : "play.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.white)
+                                .frame(width: 28)
+                            }
+                            .padding(.leading, 10.0)
+                            .padding(.trailing, 10.0)
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                            Button(action: {
+                                self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .forward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: "forward.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.leading, 10.0)
+                            .padding(.trailing, 10.0)
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                        }
+                        .padding(.top, 5.0)
+                        .padding(.bottom, 5.0)
+                        .padding(.leading, 15.0)
+                        .padding(.trailing, 10.0)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        Spacer()
+                        HStack {
+                            Button(action: {
+                                let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .backward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: "arrow.left.square.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white)
+                            }
+                            Text(self.currentPlayingInfo.sourceInfo)
+                            .font(.system(size: 28))
+                            .foregroundColor(Color.white)
+                            .lineLimit(1)
+                            Button(action: {
+                                let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .forward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: "arrow.right.square.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.top, 5.0)
+                        .padding(.bottom, 5.0)
+                        .padding(.leading, 15.0)
+                        .padding(.trailing, 15.0)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
                     }
-                    else{
-                        
-                        self.playerData.player.play()
-                    }
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
-                }) {
-                    Image(systemName: self.playerData.playbackStatus == PlaybackStatus.playing ? "pause.fill" : "play.fill")
-                        .font(.system(size: 25))
-                        .foregroundColor(.white)
-                        .frame(width: 24)
                 }
-                .padding(.leading, 10.0)
-                .padding(.trailing, 10.0)
-                Button(action: {
-                    self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .forward)
-                    self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
-                }) {
-                    Image(systemName: "forward.fill")
-                        .font(.system(size: 25))
-                        .foregroundColor(.white)
-                }
-                .padding(.leading, 10.0)
-                .padding(.trailing, 10.0)
-                Spacer()
-                Button(action: {
-                    let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .backward)
-                    self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
-                }) {
-                    Image(systemName: "arrow.left.square.fill")
-                        .font(.system(size: 25))
-                        .foregroundColor(.white)
-                }
-                Text(self.currentPlayingInfo.sourceInfo)
-                    .font(.system(size: 25))
-                    .foregroundColor(Color.white)
-                Button(action: {
-                    let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .forward)
-                    self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
-                }) {
-                    Image(systemName: "arrow.right.square.fill")
-                        .font(.system(size: 25))
-                        .foregroundColor(.white)
+                .padding(.leading, 45.0)
+                .padding(.trailing, 45.0)
+                .padding(.bottom, 25.0)
+                .background(Color.black.opacity(0.0000001))
+                .onTapGesture {
+                    self.controlInfo.setShowControls(showControls: false)
                 }
             }
-            .padding(.top, 5.0)
-            .padding(.bottom, 5.0)
-            .padding(.leading, 15.0)
-            .padding(.trailing, 15.0)
-            .background(Color.black.opacity(0.4))
-            .cornerRadius(12)
-        }
-        .padding(.leading, 15.0)
-        .padding(.trailing, 15.0)
-        .padding(.bottom, 20.0)
-        .background(Color.black.opacity(0.0000001))
-        .onTapGesture {
-            self.controlInfo.setShowControls(showControls: false)
+            else {
+                VStack {
+                    Spacer()
+                    HStack {
+                        HStack {
+                            Button(action: {
+                                self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .backward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                
+                                Image(systemName: "backward.fill")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.trailing, 10.0)
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                            Button(action: {
+                                if self.playerData.playbackStatus == PlaybackStatus.playing {
+                                    
+                                    self.playerData.player.pause()
+                                }
+                                else{
+                                    
+                                    self.playerData.player.play()
+                                }
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: self.playerData.playbackStatus == PlaybackStatus.playing ? "pause.fill" : "play.fill")
+                                    .font(.system(size: 25))
+                                    .foregroundColor(.white)
+                                    .frame(width: 24)
+                            }
+                            .padding(.leading, 10.0)
+                            .padding(.trailing, 10.0)
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                            Button(action: {
+                                self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .forward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: "forward.fill")
+                                    .font(.system(size: 25))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.leading, 10.0)
+                            .padding(.top, 5.0)
+                            .padding(.bottom, 5.0)
+                        }
+                        .padding(.top, 5.0)
+                        .padding(.bottom, 5.0)
+                        .padding(.leading, 12.0)
+                        .padding(.trailing, 12.0)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                        Spacer()
+                        HStack {
+                            Button(action: {
+                                let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .backward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: "arrow.left.square.fill")
+                                    .font(.system(size: 25))
+                                    .foregroundColor(.white)
+                            }
+                            Text(self.currentPlayingInfo.sourceInfo)
+                            .font(.system(size: 24))
+                            .foregroundColor(Color.white)
+                            .lineLimit(1)
+                            Button(action: {
+                                let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .forward)
+                                self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
+                                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                            }) {
+                                Image(systemName: "arrow.right.square.fill")
+                                    .font(.system(size: 25))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.top, 5.0)
+                        .padding(.bottom, 5.0)
+                        .padding(.leading, 12.0)
+                        .padding(.trailing, 12.0)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                    }
+                }
+                .padding(.leading, 15.0)
+                .padding(.trailing, 15.0)
+                .padding(.bottom, 20.0)
+                .background(Color.black.opacity(0.0000001))
+                .onTapGesture {
+                    self.controlInfo.setShowControls(showControls: false)
+                }
+            }
         }
     }
     
