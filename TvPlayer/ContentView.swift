@@ -200,8 +200,8 @@ struct ContentView: View {
                     })
                     .background(Color(red: 0.35, green: 0.35, blue: 0.35))
                     .cornerRadius(10)
-                    .frame(width: 80, height: 36)
-                    .padding(8)
+                    .frame(width: 80, height: 48)
+                    .padding(6)
                 } else {
                     RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
                         Text(error.localizedDescription)
@@ -212,8 +212,8 @@ struct ContentView: View {
                     }, loadingView: {
                         Text("")
                     })
-                    .frame(width: 80, height: 36)
-                    .padding(8)
+                    .frame(width: 80, height: 48)
+                    .padding(6)
                 }
                 
                 Text(station.name)
@@ -769,13 +769,13 @@ struct Controls : View {
         }
     }
     
-    func getSliderValue() -> Float {
-        return Float(self.playerData.player.currentTime().seconds / (self.playerData.player.currentItem?.duration.seconds)!)
-    }
-    
-    func getSeconds() -> Double {
-        return Double(Double(self.value) * (self.playerData.player.currentItem?.duration.seconds)!)
-    }
+//    func getSliderValue() -> Float {
+//        return Float(self.playerData.player.currentTime().seconds / (self.playerData.player.currentItem?.duration.seconds)!)
+//    }
+//
+//    func getSeconds() -> Double {
+//        return Double(Double(self.value) * (self.playerData.player.currentItem?.duration.seconds)!)
+//    }
 }
 
 class Host : UIHostingController<ContentView>{
