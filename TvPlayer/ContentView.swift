@@ -31,6 +31,7 @@ var downWWAN: UInt64 = 0
 var downWiFi: UInt64 = 0
 var upSpeed: Double = 0.0
 var downSpeed: Double = 0.0
+
 var lastTraficMonitorTime: TimeInterval = Date().timeIntervalSince1970
 var downloadSpeed: String = ""
 
@@ -103,7 +104,7 @@ func switchStation (playerData: PlayerData, station: Station, stationList: [Stat
 }
 
 struct ContentView: View {
-    
+        
     @State var playerData = PlayerData()
     @State var value : Float = 0
     @State var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
@@ -325,6 +326,13 @@ struct ContentView: View {
                     VideoPlayer(playerData: $playerData)
                         .aspectRatio(1.778, contentMode: .fit)
 
+                    if showLogo {
+                        Image("tv_icon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 280, height: 180)
+                    }
+                    
                     if self.playerData.playbackStatus == PlaybackStatus.loading {
                         LoadingView(speedString: self.$bufferInfo.downloadSpeed)
                     }
@@ -768,14 +776,6 @@ struct Controls : View {
             }
         }
     }
-    
-//    func getSliderValue() -> Float {
-//        return Float(self.playerData.player.currentTime().seconds / (self.playerData.player.currentItem?.duration.seconds)!)
-//    }
-//
-//    func getSeconds() -> Double {
-//        return Double(Double(self.value) * (self.playerData.player.currentItem?.duration.seconds)!)
-//    }
 }
 
 class Host : UIHostingController<ContentView>{
