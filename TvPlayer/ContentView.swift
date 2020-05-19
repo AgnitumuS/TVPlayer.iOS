@@ -25,6 +25,8 @@ let requiredAssetKeys = [
     "hasProtectedContent"
 ]
 
+var SHOW_CONTROL_TIME: Double = 6
+
 var upWWAN: UInt64 = 0
 var upWiFi: UInt64 = 0
 var downWWAN: UInt64 = 0
@@ -145,7 +147,7 @@ struct ContentView: View {
             DispatchQueue.main.sync {
                 
                 let timeNow: TimeInterval = Date().timeIntervalSince1970
-                if timeNow - self.controlInfo.lastControlActiveTime > 5 {
+                if timeNow - self.controlInfo.lastControlActiveTime > SHOW_CONTROL_TIME {
                     if self.controlInfo.showControls {
                         self.controlInfo.setShowControls(showControls: false)
                     }
@@ -519,53 +521,53 @@ struct Controls : View {
             if self.device.isLandscape {
                 VStack {
                     HStack {
-//                        if self.colorScheme == .dark && currentPlayingInfo.station.name.contains("CCTV") {
-//                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
-//                                Text(error.localizedDescription)
-//                            }, imageView: { image in
-//                                image
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                            }, loadingView: {
-//                                Text("")
-//                            })
-//                            .background(Color(red: 0.35, green: 0.35, blue: 0.35))
-//                            .cornerRadius(10)
-//                            .frame(width: 80, height: 36)
-//                            .padding(.top, 2.0)
-//                            .padding(.bottom, 2.0)
-//                            .padding(.leading, 8.0)
-//                            .padding(.trailing, 1.0)
-//                        } else {
-//                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
-//                                Text(error.localizedDescription)
-//                            }, imageView: { image in
-//                                image
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                            }, loadingView: {
-//                                Text("")
-//                            })
-//                            .frame(width: 80, height: 36)
-//                            .padding(.top, 2.0)
-//                            .padding(.bottom, 2.0)
-//                            .padding(.leading, 8.0)
-//                            .padding(.trailing, 1.0)
-//                        }
-                        RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
-                            Text(error.localizedDescription)
-                        }, imageView: { image in
-                            image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                        }, loadingView: {
-                            Text("")
-                        })
-                        .frame(width: 80, height: 36)
-                        .padding(.top, 2.0)
-                        .padding(.bottom, 2.0)
-                        .padding(.leading, 8.0)
-                        .padding(.trailing, 1.0)
+                        if currentPlayingInfo.station.name.contains("CCTV") {
+                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+                                Text(error.localizedDescription)
+                            }, imageView: { image in
+                                image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            }, loadingView: {
+                                Text("")
+                            })
+                            .background(Color(red: 0.35, green: 0.35, blue: 0.35))
+                            .cornerRadius(10)
+                            .frame(width: 80, height: 36)
+                            .padding(.top, 2.0)
+                            .padding(.bottom, 2.0)
+                            .padding(.leading, 8.0)
+                            .padding(.trailing, 1.0)
+                        } else {
+                            RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+                                Text(error.localizedDescription)
+                            }, imageView: { image in
+                                image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            }, loadingView: {
+                                Text("")
+                            })
+                            .frame(width: 80, height: 36)
+                            .padding(.top, 2.0)
+                            .padding(.bottom, 2.0)
+                            .padding(.leading, 8.0)
+                            .padding(.trailing, 1.0)
+                        }
+//                        RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
+//                            Text(error.localizedDescription)
+//                        }, imageView: { image in
+//                            image
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                        }, loadingView: {
+//                            Text("")
+//                        })
+//                        .frame(width: 80, height: 36)
+//                        .padding(.top, 2.0)
+//                        .padding(.bottom, 2.0)
+//                        .padding(.leading, 8.0)
+//                        .padding(.trailing, 1.0)
                         Text(currentPlayingInfo.station.name)
                             .foregroundColor(.white)
                             .font(.system(size: 30))
