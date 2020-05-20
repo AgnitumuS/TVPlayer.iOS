@@ -235,6 +235,62 @@ struct ContentView: View {
         }
     }
     
+    struct StationRowLandscape : View {
+                
+        @Binding var playerData : PlayerData
+        @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
+        @State private var logoPic: UIImage?
+        @Environment(\.colorScheme) var colorScheme
+        @Binding var selectedStationIndex: Int
+        
+        var station: Station
+        
+        var body: some View {
+
+            HStack {
+                if self.colorScheme == .dark && self.station.name.contains("CCTV") {
+                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                        Text(error.localizedDescription)
+                    }, imageView: { image in
+                        image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    }, loadingView: {
+                        Text("")
+                    })
+                    .background(Color(red: 0.35, green: 0.35, blue: 0.35))
+                    .cornerRadius(4)
+                    .frame(width: 40, height: 24)
+                    .padding(2)
+                } else {
+                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
+                        Text(error.localizedDescription)
+                    }, imageView: { image in
+                        image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    }, loadingView: {
+                        Text("")
+                    })
+                    .frame(width: 40, height: 24)
+                    .padding(2)
+                }
+                
+                Text(station.name)
+                .font(.system(size: 14))
+                .padding(.leading, 2.0)
+                
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
+                playStation(playerData: self.playerData, station: self.station, sourceIndex: 0)
+                self.selectedStationIndex = self.station.index
+            }
+        }
+    }
+    
     var body: some View {
         
         VStack{
@@ -255,7 +311,6 @@ struct ContentView: View {
                             .padding(1)
                             .background(Color(red: 0.35, green: 0.35, blue: 0.35))
                             .cornerRadius(6)
-                            //.border(Color.red, width: 1)
                         }
                         else {
                             RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
@@ -269,7 +324,6 @@ struct ContentView: View {
                             })
                             .frame(width: 40, height: 30)
                             .padding(1)
-                            //.border(Color.red, width: 1)
                         }
                     }
                     else {
@@ -322,90 +376,48 @@ struct ContentView: View {
                 .padding(.leading, 10.0)
                 .padding(.trailing, 12.0)
             }
-            
-            if self.device.isLandscape {
-                ZStack{
-                    VideoPlayer(playerData: $playerData)
-                        .aspectRatio(1.778, contentMode: .fit)
-
-                    if showLogo {
-                        Image("tv_icon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 280, height: 180)
-                    }
-                    
-                    if self.playerData.playbackStatus == PlaybackStatus.loading {
+            ZStack {
+                VideoPlayer(playerData: $playerData)
+                .aspectRatio(1.778, contentMode: .fit)
+                
+                if showLogo {
+                    Image("tv_icon")
+                    .resizable()
+                    .scaledToFit()
+                        .frame(width: self.device.isLandscape ? 280 : 150, height: self.device.isLandscape ? 180 : 100)
+                }
+                
+                if self.playerData.playbackStatus == PlaybackStatus.loading {
+                    if self.device.isLandscape {
                         LoadingView(speedString: self.$bufferInfo.downloadSpeed)
                     }
-                    else if self.playerData.playbackStatus == PlaybackStatus.error {
-                        ErrorView()
-                    }
-                    if self.controlInfo.showControls{
-                        Controls(
-                            playerData: self.$playerData,
-                            currentPlayingInfo: self.currentPlayingInfo,
-                            bufferInfo: self.bufferInfo,
-                            controlInfo: self.controlInfo,
-                            value: self.$value,
-                            stationList: self.$stationLoader.stations
-                        )
+                    else {
+                        LoadingView(speedString: self.$bufferInfo.downloadSpeed)
+                        .offset(y: -15)
                     }
                 }
-                .onTapGesture {
-                    self.controlInfo.setShowControls(showControls: true)
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                else if self.playerData.playbackStatus == PlaybackStatus.error {
+                    ErrorView()
                 }
-            } else {
-                
-                ZStack {
-                    VideoPlayer(playerData: $playerData)
-                    .aspectRatio(1.778, contentMode: .fit)
-                    
-                    if showLogo {
-                        Image("tv_icon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 150, height: 100)
-                    }
-                    
-                    if self.playerData.playbackStatus == PlaybackStatus.loading {
-                        if self.device.isLandscape {
-                            LoadingView(speedString: self.$bufferInfo.downloadSpeed)
-                        }
-                        else {
-                            LoadingView(speedString: self.$bufferInfo.downloadSpeed)
-                            .offset(y: -15)
-                        }
-                    }
-                    else if self.playerData.playbackStatus == PlaybackStatus.error {
-                        ErrorView()
-                    }
-                    if self.controlInfo.showControls {
-                        Controls(
-                            playerData: self.$playerData,
-                            currentPlayingInfo: self.currentPlayingInfo,
-                            bufferInfo: self.bufferInfo,
-                            controlInfo: self.controlInfo,
-                            value: self.$value,
-                            stationList: self.$stationLoader.stations
-                        )
-                    }
-                }
-                .frame(height: UIScreen.main.bounds.width / 1.778)
-                .onTapGesture {
-                    self.controlInfo.setShowControls(showControls: true)
-                    self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+                if self.controlInfo.showControls {
+                    Controls(
+                        playerData: self.$playerData,
+                        currentPlayingInfo: self.currentPlayingInfo,
+                        bufferInfo: self.bufferInfo,
+                        controlInfo: self.controlInfo,
+                        value: self.$value,
+                        stationList: self.$stationLoader.stations
+                    )
                 }
                 
-                GeometryReader{_ in
-                    NavigationView {
-                        
-                        if self.colorScheme == .dark {
+                HStack {
+                    Spacer()
+                    GeometryReader{_ in
+                        NavigationView {
                             List {
                                 ForEach(self.stationLoader.stations) { station in
 
-                                    StationRow(
+                                    StationRowLandscape(
                                         playerData: self.$playerData,
                                         currentPlayingInfo:
                                         self.currentPlayingInfo,
@@ -415,36 +427,76 @@ struct ContentView: View {
                                     .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
                                 }
                             }
+                            
                             .navigationBarTitle("")
                             .navigationBarHidden(true)
                         }
-                        
-                        else {
-                            List {
-                                ForEach(self.stationLoader.stations) { station in
-
-                                    StationRow(
-                                        playerData: self.$playerData,
-                                        currentPlayingInfo:
-                                        self.currentPlayingInfo,
-                                        selectedStationIndex: self.$selectedStationIndex,
-                                        station: station
-                                    )
-                                        .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.85, green: 0.85, blue: 0.85) : Color.clear)
-                                }
-                            }
-                            .navigationBarTitle("")
-                            .navigationBarHidden(true)
-                        }
+                        .opacity(0.7)
+                    }
+                    .cornerRadius(10)
+                    .padding(.trailing, 45)
+                    .frame(maxWidth: self.controlInfo.showControls && self.device.isLandscape ? 240 : 0, maxHeight: self.controlInfo.showControls && self.device.isLandscape ? 230 : 0)
+                    .onTapGesture {
+                        self.controlInfo.setShowControls(showControls: true)
+                        self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                     }
                 }
+                .frame(maxWidth: self.controlInfo.showControls && self.device.isLandscape ? .infinity : 0, maxHeight: self.controlInfo.showControls && self.device.isLandscape ? .infinity : 0)
             }
+            .frame(height: self.device.isLandscape ? UIScreen.main.bounds.height : UIScreen.main.bounds.width / 1.778)
+            .onTapGesture {
+                self.controlInfo.setShowControls(showControls: true)
+                self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
+            }
+            
+            GeometryReader{_ in
+                NavigationView {
+                    
+                    if self.colorScheme == .dark {
+                        List {
+                            ForEach(self.stationLoader.stations) { station in
+
+                                StationRow(
+                                    playerData: self.$playerData,
+                                    currentPlayingInfo:
+                                    self.currentPlayingInfo,
+                                    selectedStationIndex: self.$selectedStationIndex,
+                                    station: station
+                                )
+                                .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
+                            }
+                        }
+                        .navigationBarTitle("")
+                        .navigationBarHidden(true)
+                    }
+                    
+                    else {
+                        List {
+                            ForEach(self.stationLoader.stations) { station in
+
+                                StationRow(
+                                    playerData: self.$playerData,
+                                    currentPlayingInfo:
+                                    self.currentPlayingInfo,
+                                    selectedStationIndex: self.$selectedStationIndex,
+                                    station: station
+                                )
+                                    .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.85, green: 0.85, blue: 0.85) : Color.clear)
+                            }
+                        }
+                        .navigationBarTitle("")
+                        .navigationBarHidden(true)
+                    }
+                }
+                .frame(maxHeight: self.device.isLandscape ? 0 : .infinity)
+            }
+            Text("")
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: self.device.isLandscape ? 0 : 25, maxHeight: self.device.isLandscape ? 0 : 30)
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .edgesIgnoringSafeArea(.bottom)
         .prefersHomeIndicatorAutoHidden(true)
     }
-    
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -554,27 +606,13 @@ struct Controls : View {
                             .padding(.leading, 8.0)
                             .padding(.trailing, 1.0)
                         }
-//                        RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
-//                            Text(error.localizedDescription)
-//                        }, imageView: { image in
-//                            image
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fit)
-//                        }, loadingView: {
-//                            Text("")
-//                        })
-//                        .frame(width: 80, height: 36)
-//                        .padding(.top, 2.0)
-//                        .padding(.bottom, 2.0)
-//                        .padding(.leading, 8.0)
-//                        .padding(.trailing, 1.0)
                         Text(currentPlayingInfo.station.name)
-                            .foregroundColor(.white)
-                            .font(.system(size: 30))
-                            .padding(.top, 5.0)
-                            .padding(.bottom, 5.0)
-                            .padding(.leading, 1.0)
-                            .padding(.trailing, 15.0)
+                        .foregroundColor(.white)
+                        .font(.system(size: 30))
+                        .padding(.top, 5.0)
+                        .padding(.bottom, 5.0)
+                        .padding(.leading, 1.0)
+                        .padding(.trailing, 15.0)
                     }
                     .background(Color.black.opacity(0.4))
                     .cornerRadius(12)
@@ -589,7 +627,6 @@ struct Controls : View {
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
-                                
                                 Image(systemName: "backward.fill")
                                 .font(.system(size: 30))
                                 .foregroundColor(.white)
@@ -623,8 +660,8 @@ struct Controls : View {
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: "forward.fill")
-                                    .font(.system(size: 30))
-                                    .foregroundColor(.white)
+                                .font(.system(size: 30))
+                                .foregroundColor(.white)
                             }
                             .padding(.leading, 10.0)
                             .padding(.trailing, 10.0)
@@ -658,8 +695,8 @@ struct Controls : View {
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: "arrow.right.square.fill")
-                                    .font(.system(size: 30))
-                                    .foregroundColor(.white)
+                                .font(.system(size: 30))
+                                .foregroundColor(.white)
                             }
                         }
                         .padding(.top, 5.0)
@@ -690,8 +727,8 @@ struct Controls : View {
                             }) {
                                 
                                 Image(systemName: "backward.fill")
-                                    .font(.title)
-                                    .foregroundColor(.white)
+                                .font(.title)
+                                .foregroundColor(.white)
                             }
                             .padding(.trailing, 10.0)
                             .padding(.top, 5.0)
@@ -708,9 +745,9 @@ struct Controls : View {
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: self.playerData.playbackStatus == PlaybackStatus.playing ? "pause.fill" : "play.fill")
-                                    .font(.system(size: 25))
-                                    .foregroundColor(.white)
-                                    .frame(width: 24)
+                                .font(.system(size: 25))
+                                .foregroundColor(.white)
+                                .frame(width: 24)
                             }
                             .padding(.leading, 10.0)
                             .padding(.trailing, 10.0)
@@ -722,8 +759,8 @@ struct Controls : View {
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: "forward.fill")
-                                    .font(.system(size: 25))
-                                    .foregroundColor(.white)
+                                .font(.system(size: 25))
+                                .foregroundColor(.white)
                             }
                             .padding(.leading, 10.0)
                             .padding(.top, 5.0)
@@ -756,8 +793,8 @@ struct Controls : View {
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: "arrow.right.square.fill")
-                                    .font(.system(size: 25))
-                                    .foregroundColor(.white)
+                                .font(.system(size: 25))
+                                .foregroundColor(.white)
                             }
                         }
                         .padding(.top, 5.0)
