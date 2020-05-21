@@ -127,22 +127,18 @@ class PlayerData: NSObject {
                 DispatchQueue.main.async {
                     //[weak self] in
                     if newStatus == .playing {
-                        //gPlaybackStatus = .playing
                         self.playbackStatus = .playing
                     }
                     else if newStatus == .paused {
                         
                         if oldStatus == .playing {
-                            //gPlaybackStatus = .paused
                             self.playbackStatus = .paused
                         }
                         else {
-                            //gPlaybackStatus = .error
                             self.playbackStatus = .error
                         }
                     }
                     else {
-                        //gPlaybackStatus = .loading
                         self.playbackStatus = .loading
                     }
                 }
@@ -168,14 +164,6 @@ struct VideoPlayer : UIViewControllerRepresentable {
         _ uiViewController: AVPlayerViewController,
         context: UIViewControllerRepresentableContext<VideoPlayer>
     ) { }
-}
-
-struct Station: Decodable, Identifiable {
-    var id = UUID()
-    var index: Int
-    var name: String
-    var logo: String
-    var urls: [String]
 }
 
 class ControlInfo: ObservableObject {
@@ -514,26 +502,24 @@ struct LoadingView : View {
     @Binding var speedString : String
     
     var body : some View{
-        
         VStack {
-            
             Text(" Loading ...")
-                .font(.system(size: 18))
-                .padding(.leading, 20.0)
-                .padding(.trailing, 22.0)
-                .padding(.top, 10.0)
-                .padding(.bottom, 6.0)
-                .foregroundColor(Color.white)
-                .lineLimit(1)
+            .font(.system(size: 18))
+            .padding(.leading, 20.0)
+            .padding(.trailing, 22.0)
+            .padding(.top, 10.0)
+            .padding(.bottom, 6.0)
+            .foregroundColor(Color.white)
+            .lineLimit(1)
             
             Text(speedString)
-                .font(.system(size: 18))
-                .padding(.leading, 20.0)
-                .padding(.trailing, 22.0)
-                .padding(.top, 6.0)
-                .padding(.bottom, 10.0)
-                .foregroundColor(Color.white)
-                .lineLimit(1)
+            .font(.system(size: 18))
+            .padding(.leading, 20.0)
+            .padding(.trailing, 22.0)
+            .padding(.top, 6.0)
+            .padding(.bottom, 10.0)
+            .foregroundColor(Color.white)
+            .lineLimit(1)
         }
         .background(Color.black.opacity(0.4))
         .cornerRadius(12)
@@ -546,14 +532,14 @@ struct ErrorView : View {
         
         VStack {
             Image(systemName: "exclamationmark.square")
-                .foregroundColor(.white)
-                .font(.system(size: 40))
-                .imageScale(.large)
-                .padding(.all, 10.0)
+            .foregroundColor(.white)
+            .font(.system(size: 40))
+            .imageScale(.large)
+            .padding(.all, 10.0)
             Text("Load failed, please try switch source.")
-                .font(.system(size: 18))
-                .padding(.all, 10.0)
-                .foregroundColor(Color.white)
+            .font(.system(size: 18))
+            .padding(.all, 10.0)
+            .foregroundColor(Color.white)
         }
         .background(Color.black.opacity(0.4))
         .cornerRadius(12)

@@ -29,28 +29,15 @@ struct ContentView: View {
     @ObservedObject var bufferInfo = BufferInfo(downloadSpeed: "", percentage: "")
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
     @ObservedObject var stationLoader = StationLoader(urlString: stationListUrl)
+    @ObservedObject var controlInfo = ControlInfo(lastControlActiveTime: Date().timeIntervalSince1970, showControls: false)
     @EnvironmentObject var device : Device
     @Environment(\.colorScheme) var colorScheme
-    
-    @ObservedObject var controlInfo = ControlInfo(lastControlActiveTime: Date().timeIntervalSince1970, showControls: false)
     
     init() {
         startNetworkMonitor()
         playerData.player = AVPlayer()
         playerData.setObserver()
         //UITableView.appearance().separatorStyle = .none
-    }
-    
-    func getNetSpeedText(speed: UInt64) -> String {
-        var text: String = ""
-        if (speed >= 0 && speed < 1024) {
-            text = String(speed) + " B/s"
-        } else if (speed >= 1024 && speed < (1024 * 1024)) {
-            text = String(speed / 1024) + " KB/s"
-        } else if (speed >= (1024 * 1024) && speed < (1024 * 1024 * 1024)) {
-            text = String(speed / (1024 * 1024)) + " MB/s"
-        }
-        return text
     }
     
     func startNetworkMonitor() {
@@ -74,7 +61,7 @@ struct ContentView: View {
                 }
                 let downSpeedRaw = downChanged * 1000 / UInt64(timeChanged)
 
-                downloadSpeed = self.getNetSpeedText(speed: downSpeedRaw)
+                downloadSpeed = getNetSpeedText(speed: downSpeedRaw)
                 upWWAN = dataUsage.wirelessWanDataSent
                 upWiFi = dataUsage.wifiSent
                 downWWAN = dataUsage.wirelessWanDataReceived
@@ -90,120 +77,7 @@ struct ContentView: View {
         
         self.timer?.resume()
     }
-    
-    struct StationRow : View {
-                
-        @Binding var playerData : PlayerData
-        @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
-        @State private var logoPic: UIImage?
-        @Environment(\.colorScheme) var colorScheme
-        @Binding var selectedStationIndex: Int
         
-        var station: Station
-        
-        var body: some View {
-
-            HStack {
-                if self.colorScheme == .dark && self.station.name.contains("CCTV") {
-                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                        Text(error.localizedDescription)
-                    }, imageView: { image in
-                        image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    }, loadingView: {
-                        Text("")
-                    })
-                    .background(Color(red: 0.35, green: 0.35, blue: 0.35))
-                    .cornerRadius(10)
-                    .frame(width: 80, height: 48)
-                    .padding(6)
-                } else {
-                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                        Text(error.localizedDescription)
-                    }, imageView: { image in
-                        image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    }, loadingView: {
-                        Text("")
-                    })
-                    .frame(width: 80, height: 48)
-                    .padding(6)
-                }
-                
-                Text(station.name)
-                .font(.system(size: 24))
-                .padding(.leading, 15.0)
-                
-                Spacer()
-            }
-            .contentShape(Rectangle())
-            //.frame(width: UIScreen.main.bounds.width)
-            .onTapGesture {
-                self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
-                playStation(playerData: self.playerData, station: self.station, sourceIndex: 0)
-                self.selectedStationIndex = self.station.index
-            }
-        }
-    }
-    
-    struct StationRowLandscape : View {
-                
-        @Binding var playerData : PlayerData
-        @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
-        @State private var logoPic: UIImage?
-        @Environment(\.colorScheme) var colorScheme
-        @Binding var selectedStationIndex: Int
-        
-        var station: Station
-        
-        var body: some View {
-
-            HStack {
-                if self.colorScheme == .dark && self.station.name.contains("CCTV") {
-                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                        Text(error.localizedDescription)
-                    }, imageView: { image in
-                        image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    }, loadingView: {
-                        Text("")
-                    })
-                    .background(Color(red: 0.35, green: 0.35, blue: 0.35))
-                    .cornerRadius(4)
-                    .frame(width: 40, height: 24)
-                    .padding(2)
-                } else {
-                    RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
-                        Text(error.localizedDescription)
-                    }, imageView: { image in
-                        image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    }, loadingView: {
-                        Text("")
-                    })
-                    .frame(width: 40, height: 24)
-                    .padding(2)
-                }
-                
-                Text(station.name)
-                .font(.system(size: 14))
-                .padding(.leading, 2.0)
-                
-                Spacer()
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
-                playStation(playerData: self.playerData, station: self.station, sourceIndex: 0)
-                self.selectedStationIndex = self.station.index
-            }
-        }
-    }
-    
     var body: some View {
         
         VStack{
@@ -262,26 +136,26 @@ struct ContentView: View {
                     })
                     {
                         Text(self.currentPlayingInfo.sourceInfo)
-                            //.bold()
-                            .font(.system(size: 21))
-                            .foregroundColor(Color.gray)
-                            .frame(alignment: .trailing)
-                            .lineLimit(1)
+                        //.bold()
+                        .font(.system(size: 21))
+                        .foregroundColor(Color.gray)
+                        .frame(alignment: .trailing)
+                        .lineLimit(1)
 
                         Image(systemName: "arrow.right.arrow.left.square.fill")
-                            .foregroundColor(Color.gray)
-                            .opacity(self.currentPlayingInfo.sourceInfo.count > 0 ? 1 : 0)
-                            .font(.system(size: 23))
+                        .foregroundColor(Color.gray)
+                        .opacity(self.currentPlayingInfo.sourceInfo.count > 0 ? 1 : 0)
+                        .font(.system(size: 23))
                     }
                     .padding(.leading, 7.0)
                     .padding(.trailing, 7.0)
                     .padding(.top, 3.0)
                     .padding(.bottom, 3.0)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(lineWidth: 2)
-                            .foregroundColor(Color.gray)
-                            .opacity(self.currentPlayingInfo.sourceInfo.count > 0 ? 1 : 0)
+                    RoundedRectangle(cornerRadius: 6)
+                    .stroke(lineWidth: 2)
+                    .foregroundColor(Color.gray)
+                    .opacity(self.currentPlayingInfo.sourceInfo.count > 0 ? 1 : 0)
                     )
                 }
                 .padding(.top, 5.0)
@@ -297,7 +171,7 @@ struct ContentView: View {
                     Image("tv_icon")
                     .resizable()
                     .scaledToFit()
-                        .frame(width: self.device.isLandscape ? 280 : 150, height: self.device.isLandscape ? 180 : 100)
+                    .frame(width: self.device.isLandscape ? 280 : 150, height: self.device.isLandscape ? 180 : 100)
                 }
                 
                 if self.playerData.playbackStatus == PlaybackStatus.loading {
@@ -340,7 +214,6 @@ struct ContentView: View {
                                     .listRowBackground(self.currentPlayingInfo.station.index == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
                                 }
                             }
-                            
                             .navigationBarTitle("")
                             .navigationBarHidden(true)
                         }
@@ -364,7 +237,6 @@ struct ContentView: View {
             
             GeometryReader{_ in
                 NavigationView {
-                    
                     if self.colorScheme == .dark {
                         List {
                             ForEach(self.stationLoader.stations) { station in
