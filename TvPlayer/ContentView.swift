@@ -25,7 +25,7 @@ let requiredAssetKeys = [
     "hasProtectedContent"
 ]
 
-var SHOW_CONTROL_TIME: Double = 6
+var SHOW_CONTROL_TIME: Double = 8
 
 var upWWAN: UInt64 = 0
 var upWiFi: UInt64 = 0
@@ -110,7 +110,7 @@ struct ContentView: View {
     @State var playerData = PlayerData()
     @State var value : Float = 0
     @State var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-    @State var selectedStationIndex: Int = -1
+    //@State var selectedStationIndex: Int = -1
     
     @ObservedObject var bufferInfo = BufferInfo(downloadSpeed: "", percentage: "")
     @ObservedObject var currentPlayingInfo = CurrentPlayingInfo(station: Station(index: -1, name: "TV Player", logo: "", urls: [""]), sourceIndex: 0, sourceInfo: "")
@@ -421,10 +421,10 @@ struct ContentView: View {
                                         playerData: self.$playerData,
                                         currentPlayingInfo:
                                         self.currentPlayingInfo,
-                                        selectedStationIndex: self.$selectedStationIndex,
+                                        selectedStationIndex: self.$currentPlayingInfo.station.index,
                                         station: station
                                     )
-                                    .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
+                                    .listRowBackground(self.currentPlayingInfo.station.index == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
                                 }
                             }
                             
@@ -460,10 +460,10 @@ struct ContentView: View {
                                     playerData: self.$playerData,
                                     currentPlayingInfo:
                                     self.currentPlayingInfo,
-                                    selectedStationIndex: self.$selectedStationIndex,
+                                    selectedStationIndex: self.$currentPlayingInfo.station.index,
                                     station: station
                                 )
-                                .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
+                                .listRowBackground(self.currentPlayingInfo.station.index == station.index ? Color(red: 0.35, green: 0.35, blue: 0.35) : Color.clear)
                             }
                         }
                         .navigationBarTitle("")
@@ -478,10 +478,10 @@ struct ContentView: View {
                                     playerData: self.$playerData,
                                     currentPlayingInfo:
                                     self.currentPlayingInfo,
-                                    selectedStationIndex: self.$selectedStationIndex,
+                                    selectedStationIndex: self.$currentPlayingInfo.station.index,
                                     station: station
                                 )
-                                    .listRowBackground(self.selectedStationIndex == station.index ? Color(red: 0.85, green: 0.85, blue: 0.85) : Color.clear)
+                                .listRowBackground(self.currentPlayingInfo.station.index == station.index ? Color(red: 0.85, green: 0.85, blue: 0.85) : Color.clear)
                             }
                         }
                         .navigationBarTitle("")
@@ -573,7 +573,9 @@ struct Controls : View {
             if self.device.isLandscape {
                 VStack {
                     HStack {
-                        if currentPlayingInfo.station.name.contains("CCTV") {
+                        if currentPlayingInfo.station.index < 0 {
+                            
+                        } else if currentPlayingInfo.station.name.contains("CCTV") {
                             RemoteImage(type: .url(URL(string: severPrefix + "logo/" + currentPlayingInfo.station.logo)!), errorView: { error in
                                 Text(error.localizedDescription)
                             }, imageView: { image in
@@ -625,6 +627,7 @@ struct Controls : View {
                             Button(action: {
                                 self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .backward)
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
+                                self.currentPlayingInfo.setCurrentStation(station: self.currentPlayingInfo.station, sourceIndex: 0)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: "backward.fill")
@@ -657,6 +660,7 @@ struct Controls : View {
                             Button(action: {
                                 self.currentPlayingInfo.station = switchStation(playerData: self.playerData, station: self.currentPlayingInfo.station, stationList: self.stationList, direction: .forward)
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: 0)
+                                self.currentPlayingInfo.setCurrentStation(station: self.currentPlayingInfo.station, sourceIndex: 0)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
                                 Image(systemName: "forward.fill")
