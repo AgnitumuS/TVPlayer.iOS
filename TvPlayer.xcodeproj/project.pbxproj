@@ -39,6 +39,7 @@
 		84CC51A4240AAED900F0FC1F /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		84DCB9202476CC1D0048207D /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		84DCB9222476D1AE0048207D /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		84EABA3B2476D7B3003EF79A /* TV Player.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TV Player.entitlements"; sourceTree = "<group>"; };
 		9FE8678FF32B135FFCCD8D5F /* Pods-TvPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TvPlayer.debug.xcconfig"; path = "Target Support Files/Pods-TvPlayer/Pods-TvPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 		A2CC548ECBED839453BD64D8 /* Pods-TvPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TvPlayer.release.xcconfig"; path = "Target Support Files/Pods-TvPlayer/Pods-TvPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		DEC8012431050180DF2C8241 /* libPods-TvPlayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TvPlayer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +87,7 @@
 		7798846623E9A4C9000209A5 /* TvPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				84EABA3B2476D7B3003EF79A /* TV Player.entitlements */,
 				7798846723E9A4C9000209A5 /* AppDelegate.swift */,
 				7798846923E9A4C9000209A5 /* SceneDelegate.swift */,
 				7798846B23E9A4C9000209A5 /* ContentView.swift */,
@@ -371,7 +373,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = "TvPlayer/TV Player.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
@@ -401,7 +403,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = "TvPlayer/TV Player.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
