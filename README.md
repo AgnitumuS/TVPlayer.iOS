@@ -10,3 +10,6 @@
 <br/>
 
 ![avatar](https://raw.githubusercontent.com/cy8018/Resources/master/tv/snapshot/snapshot_ios_tv_1.png)
+![avatar](https://raw.githubusercontent.com/cy8018/Resources/master/tv/snapshot/snapshot_ios_tv_2.png)
+![avatar](https://raw.githubusercontent.com/cy8018/Resources/master/tv/snapshot/snapshot_ios_tv_3.png)
+![avatar](https://raw.githubusercontent.com/cy8018/Resources/master/tv/snapshot/snapshot_ios_tv_4.png)
