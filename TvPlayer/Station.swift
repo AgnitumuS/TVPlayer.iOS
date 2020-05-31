@@ -103,8 +103,8 @@ struct StationRowLandscape : View {
                 })
                 .background(Color(red: 0.35, green: 0.35, blue: 0.35))
                 .cornerRadius(4)
-                .frame(width: 40, height: 24)
-                .padding(2)
+                .frame(width: 38, height: 28)
+                //.padding(1)
             } else {
                 RemoteImage(type: .url(URL(string: severPrefix + "logo/" + self.station.logo)!), errorView: { error in
                     Text(error.localizedDescription)
@@ -115,13 +115,13 @@ struct StationRowLandscape : View {
                 }, loadingView: {
                     Text("")
                 })
-                .frame(width: 40, height: 24)
-                .padding(2)
+                .frame(width: 38, height: 28)
+                //.padding(1)
             }
             
             Text(station.name)
-            .font(.system(size: 14))
-            .padding(.leading, 2.0)
+            .font(.system(size: 16))
+            //.padding(.leading, 1.0)
             
             Spacer()
         }

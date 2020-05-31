@@ -387,8 +387,8 @@ struct Controls : View {
                         .cornerRadius(12)
                     }
                 }
-                .padding(.leading, 45.0)
-                .padding(.trailing, 45.0)
+                .padding(.leading, 80.0)
+                .padding(.trailing, 80.0)
                 .padding(.bottom, 25.0)
                 .background(Color.black.opacity(0.0000001))
                 .onTapGesture {

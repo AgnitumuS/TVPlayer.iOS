@@ -217,16 +217,16 @@ struct ContentView: View {
                             .navigationBarTitle("")
                             .navigationBarHidden(true)
                         }
-                        .opacity(0.7)
+                        .opacity(0.65)
                     }
                     .cornerRadius(10)
-                    .padding(.trailing, 45)
-                    .frame(maxWidth: self.controlInfo.showControls && self.device.isLandscape ? 240 : 0, maxHeight: self.controlInfo.showControls && self.device.isLandscape ? 230 : 0)
+                    .frame(maxWidth: self.controlInfo.showControls && self.device.isLandscape ? 200 : 0, maxHeight: self.controlInfo.showControls && self.device.isLandscape ? 230 : 0)
                     .onTapGesture {
                         self.controlInfo.setShowControls(showControls: true)
                         self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                     }
                 }
+                .padding(.trailing, 35)
                 .frame(maxWidth: self.controlInfo.showControls && self.device.isLandscape ? .infinity : 0, maxHeight: self.controlInfo.showControls && self.device.isLandscape ? .infinity : 0)
             }
             .frame(height: self.device.isLandscape ? UIScreen.main.bounds.height : UIScreen.main.bounds.width / 1.778)
@@ -278,8 +278,9 @@ struct ContentView: View {
             Text("")
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: self.device.isLandscape ? 0 : 25, maxHeight: self.device.isLandscape ? 0 : 30)
         }
+        .background(self.device.isLandscape ? Color.black : Color.clear)
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-        .edgesIgnoringSafeArea(.bottom)
+        .edgesIgnoringSafeArea(self.device.isLandscape ? .all : .bottom)
         .prefersHomeIndicatorAutoHidden(true)
     }
 }
