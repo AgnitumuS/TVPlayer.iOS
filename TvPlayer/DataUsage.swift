@@ -25,6 +25,8 @@ class DataUsage {
     private static let wwanInterfacePrefix = "pdp_ip"
     private static let wifiInterfacePrefix = "en"
 
+    public init() {}
+    
     class func getDataUsage() -> DataUsageInfo {
         var interfaceAddresses: UnsafeMutablePointer<ifaddrs>? = nil
 

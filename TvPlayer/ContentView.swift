@@ -21,7 +21,7 @@ var severPrefix: String = "https://gitee.com/cy8018/Resources/raw/master/tv/"
 
 
 struct ContentView: View {
-        
+    
     @State var playerData = PlayerData()
     @State var value : Float = 0
     @State var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
@@ -32,6 +32,9 @@ struct ContentView: View {
     @ObservedObject var controlInfo = ControlInfo(lastControlActiveTime: Date().timeIntervalSince1970, showControls: false)
     @EnvironmentObject var device : Device
     @Environment(\.colorScheme) var colorScheme
+    
+    @FetchRequest(entity: StationModel.entity(), sortDescriptors: []) var stationModels: FetchedResults<StationModel>
+    @Environment(\.managedObjectContext) var moc
     
     init() {
         startNetworkMonitor()
@@ -53,25 +56,27 @@ struct ContentView: View {
                     }
                 }
                 
-                let dataUsage = DataUsage.getDataUsage()
-                let downChanged = dataUsage.wirelessWanDataReceived + dataUsage.wifiReceived - downWWAN - downWiFi
-                var timeChanged = timeNow * 1000 - lastTraficMonitorTime * 1000
-                if timeChanged < 1 {
-                    timeChanged = 1
-                }
-                let downSpeedRaw = downChanged * 1000 / UInt64(timeChanged)
+//                if (self.playerData.playbackStatus == PlaybackStatus.loading) {
+                    let dataUsageInfoNow = DataUsage.getDataUsage()
+                  
+                    let downChanged = dataUsageInfoNow.wirelessWanDataReceived + dataUsageInfoNow.wifiReceived
+                        - dataUsageInfo.wirelessWanDataReceived - dataUsageInfo.wifiReceived
+                    var timeChanged = timeNow * 1000 - lastTraficMonitorTime * 1000
+                    if timeChanged < 1 {
+                        timeChanged = 1
+                    }
+                    let downSpeedRaw = downChanged * 1000 / UInt64(timeChanged)
 
-                downloadSpeed = getNetSpeedText(speed: downSpeedRaw)
-                upWWAN = dataUsage.wirelessWanDataSent
-                upWiFi = dataUsage.wifiSent
-                downWWAN = dataUsage.wirelessWanDataReceived
-                downWiFi = dataUsage.wifiReceived
+                    downloadSpeed = getNetSpeedText(speed: downSpeedRaw)
+        
+                    dataUsageInfo = dataUsageInfoNow
 
-                lastTraficMonitorTime = timeNow
-                self.bufferInfo.downloadSpeed = downloadSpeed
-                self.bufferInfo.setDownloadSpeed(downloadSpeed: downloadSpeed)
+                    lastTraficMonitorTime = timeNow
+                    self.bufferInfo.downloadSpeed = downloadSpeed
+                    self.bufferInfo.setDownloadSpeed(downloadSpeed: downloadSpeed)
 
-                os_log("Download Speed: %@", log: OSLog.default, type: .debug, downloadSpeed)
+                    os_log("Download Speed: %@", log: OSLog.default, type: .debug, downloadSpeed)
+//                }
             }
         })
         
@@ -133,6 +138,7 @@ struct ContentView: View {
                                 direction: .forward
                             )
                         )
+                        saveSourceIndex(context: self.moc, stationModels: self.stationModels, stationName: self.currentPlayingInfo.station.name, index: self.currentPlayingInfo.sourceIndex)
                     })
                     {
                         Text(self.currentPlayingInfo.sourceInfo)

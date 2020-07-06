@@ -12,6 +12,7 @@ import Combine
 import Alamofire
 import SwiftyJSON
 import RemoteImage
+import CoreData
 
 struct Station: Decodable, Identifiable {
     var id = UUID()
@@ -21,6 +22,37 @@ struct Station: Decodable, Identifiable {
     var urls: [String]
 }
 
+func getSourceIndex(stationModels: FetchedResults<StationModel>, stationName: String) -> Int {
+    
+    var index: Int = 0
+    for station in stationModels {
+        if (station.station_name == stationName && station.last_source > 0) {
+            index = Int(station.last_source)
+        }
+    }
+    return index
+}
+
+func saveSourceIndex(context: NSManagedObjectContext, stationModels: FetchedResults<StationModel>, stationName: String, index: Int) {
+    
+    var hasEntry: Bool = false
+    for station in stationModels {
+        if (station.station_name == stationName && station.last_source != index) {
+            station.last_source = Int32(index)
+            hasEntry = true
+        }
+    }
+    
+    if (!hasEntry) {
+        
+        let station = StationModel(context: context)
+        station.station_name = stationName
+        station.last_source = Int32(index)
+    }
+    
+    try? context.save()
+}
+
 struct StationRow : View {
             
     @Binding var playerData : PlayerData
@@ -28,6 +60,8 @@ struct StationRow : View {
     @State private var logoPic: UIImage?
     @Environment(\.colorScheme) var colorScheme
     @Binding var selectedStationIndex: Int
+    @FetchRequest(entity: StationModel.entity(), sortDescriptors: []) var stationModels: FetchedResults<StationModel>
+    
     
     var station: Station
     
@@ -71,8 +105,9 @@ struct StationRow : View {
         .contentShape(Rectangle())
         //.frame(width: UIScreen.main.bounds.width)
         .onTapGesture {
-            self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: 0)
-            playStation(playerData: self.playerData, station: self.station, sourceIndex: 0)
+            self.currentPlayingInfo.sourceIndex = getSourceIndex(stationModels: self.stationModels, stationName: self.station.name)
+            self.currentPlayingInfo.setCurrentStation(station: self.station, sourceIndex: self.currentPlayingInfo.sourceIndex)
+            playStation(playerData: self.playerData, station: self.station, sourceIndex: self.currentPlayingInfo.sourceIndex)
             self.selectedStationIndex = self.station.index
         }
     }

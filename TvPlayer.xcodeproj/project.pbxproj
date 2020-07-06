@@ -17,6 +17,8 @@
 		77C4CF2623FEB2D900F4DF75 /* PreferenceUIHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C4CF2523FEB2D900F4DF75 /* PreferenceUIHostingController.swift */; };
 		8435646C244335BF00D5E6E4 /* DataUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8435646B244335BF00D5E6E4 /* DataUsage.swift */; };
 		8448168F2448954D001E42A4 /* RemoteImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8448168E2448954D001E42A4 /* RemoteImage */; };
+		847F66FC24B0DF88004C5336 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 847F66FB24B0DF88004C5336 /* CoreData.framework */; };
+		847F66FF24B0DFF1004C5336 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 847F66FD24B0DFF1004C5336 /* Model.xcdatamodeld */; };
 		84CC51A5240AAED900F0FC1F /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC51A4240AAED900F0FC1F /* Device.swift */; };
 		84DCB9212476CC1D0048207D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCB9202476CC1D0048207D /* Player.swift */; };
 		84DCB9232476D1AE0048207D /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DCB9222476D1AE0048207D /* Util.swift */; };
@@ -36,6 +38,8 @@
 		77C4CF2523FEB2D900F4DF75 /* PreferenceUIHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceUIHostingController.swift; sourceTree = "<group>"; };
 		843564682443356C00D5E6E4 /* TvPlayer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TvPlayer-Bridging-Header.h"; sourceTree = "<group>"; };
 		8435646B244335BF00D5E6E4 /* DataUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUsage.swift; sourceTree = "<group>"; };
+		847F66FB24B0DF88004C5336 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
+		847F66FE24B0DFF1004C5336 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		84CC51A4240AAED900F0FC1F /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		84DCB9202476CC1D0048207D /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		84DCB9222476D1AE0048207D /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
@@ -51,6 +55,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8448168F2448954D001E42A4 /* RemoteImage in Frameworks */,
+				847F66FC24B0DF88004C5336 /* CoreData.framework in Frameworks */,
 				DAC7DB82A40B44F1797BDBDF /* libPods-TvPlayer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -61,6 +66,7 @@
 		496FDAF67B0882C9FEC7718C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				847F66FB24B0DF88004C5336 /* CoreData.framework */,
 				DEC8012431050180DF2C8241 /* libPods-TvPlayer.a */,
 			);
 			name = Frameworks;
@@ -102,6 +108,7 @@
 				7798847523E9A4CA000209A5 /* Info.plist */,
 				7798846D23E9A4CA000209A5 /* Assets.xcassets */,
 				7798846F23E9A4CA000209A5 /* Preview Content */,
+				847F66FD24B0DFF1004C5336 /* Model.xcdatamodeld */,
 			);
 			path = TvPlayer;
 			sourceTree = "<group>";
@@ -234,6 +241,7 @@
 				84CC51A5240AAED900F0FC1F /* Device.swift in Sources */,
 				84DCB9212476CC1D0048207D /* Player.swift in Sources */,
 				7798846C23E9A4C9000209A5 /* ContentView.swift in Sources */,
+				847F66FF24B0DFF1004C5336 /* Model.xcdatamodeld in Sources */,
 				8435646C244335BF00D5E6E4 /* DataUsage.swift in Sources */,
 				77C4CF2623FEB2D900F4DF75 /* PreferenceUIHostingController.swift in Sources */,
 			);
@@ -467,6 +475,19 @@
 			productName = RemoteImage;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		847F66FD24B0DFF1004C5336 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				847F66FE24B0DFF1004C5336 /* Model.xcdatamodel */,
+			);
+			currentVersion = 847F66FE24B0DFF1004C5336 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 7798845C23E9A4C9000209A5 /* Project object */;
 }

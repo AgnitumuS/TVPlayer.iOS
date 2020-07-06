@@ -19,12 +19,7 @@ let requiredAssetKeys = [
 
 var SHOW_CONTROL_TIME: Double = 8
 
-var upWWAN: UInt64 = 0
-var upWiFi: UInt64 = 0
-var downWWAN: UInt64 = 0
-var downWiFi: UInt64 = 0
-var upSpeed: Double = 0.0
-var downSpeed: Double = 0.0
+var dataUsageInfo: DataUsageInfo = DataUsageInfo()
 
 var lastTraficMonitorTime: TimeInterval = Date().timeIntervalSince1970
 var downloadSpeed: String = ""
@@ -130,7 +125,6 @@ class PlayerData: NSObject {
                         self.playbackStatus = .playing
                     }
                     else if newStatus == .paused {
-                        
                         if oldStatus == .playing {
                             self.playbackStatus = .paused
                         }
@@ -243,6 +237,8 @@ struct Controls : View {
     @Binding var value : Float
     @Binding var stationList: [Station]
     //@Environment(\.colorScheme) var colorScheme
+    @FetchRequest(entity: StationModel.entity(), sortDescriptors: []) var stationModels: FetchedResults<StationModel>
+    @Environment(\.managedObjectContext) var moc
     
     var body : some View {
         VStack {
@@ -358,6 +354,9 @@ struct Controls : View {
                         HStack {
                             Button(action: {
                                 let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .backward)
+                                
+                                saveSourceIndex(context: self.moc, stationModels: self.stationModels, stationName: self.currentPlayingInfo.station.name, index: sourceIndex)
+                                
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
@@ -371,6 +370,7 @@ struct Controls : View {
                             .lineLimit(1)
                             Button(action: {
                                 let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .forward)
+                                saveSourceIndex(context: self.moc, stationModels: self.stationModels, stationName: self.currentPlayingInfo.station.name, index: sourceIndex)
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
@@ -456,6 +456,7 @@ struct Controls : View {
                         HStack {
                             Button(action: {
                                 let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .backward)
+                                saveSourceIndex(context: self.moc, stationModels: self.stationModels, stationName: self.currentPlayingInfo.station.name, index: sourceIndex)
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
@@ -469,6 +470,7 @@ struct Controls : View {
                             .lineLimit(1)
                             Button(action: {
                                 let sourceIndex = switchSource(playerData: self.playerData, station: self.currentPlayingInfo.station, sourceIndex: self.currentPlayingInfo.sourceIndex, direction: .forward)
+                                saveSourceIndex(context: self.moc, stationModels: self.stationModels, stationName: self.currentPlayingInfo.station.name, index: sourceIndex)
                                 self.currentPlayingInfo.setCurrentSource(sourceIndex: sourceIndex)
                                 self.controlInfo.setLastControlActiveTime(lastControlActiveTime: Date().timeIntervalSince1970)
                             }) {
